@@ -36,6 +36,9 @@ function App() {
     setSelectedUserId(userId);
   };
 
+  const handleResultDeleted = (deletedResultId) => {
+    setUserResults(prevResults => prevResults.filter(result => result.id !== deletedResultId));
+  };
 
 
   return (
@@ -51,7 +54,9 @@ function App() {
           
           <h2>Results: {selectedUserName}</h2>
           {selectedUserId && ( // selectedUserId が null でない場合に ResultList をレンダリング
-          <ResultList results={userResults} />
+          <ResultList results={userResults}
+              userId={selectedUserId}
+              onResultDeleted={handleResultDeleted}/>
           )}
         </div>
       )}
