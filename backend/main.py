@@ -1,11 +1,13 @@
-from fastapi import FastAPI, Depends, HTTPException, Form
+import datetime
+from typing import Annotated, List
+from fastapi import FastAPI, Depends, HTTPException, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, Date
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session, relationship
 from pydantic import BaseModel
-from typing import Annotated, List
-import datetime
+
+router = APIRouter()
 
 # データベースの設定
 DATABASE_URL = "sqlite:///./test.db"  # SQLiteデータベースのURL
@@ -70,6 +72,7 @@ class UserResultCreate(BaseModel):
 class UserResultRead(BaseModel):
     id: int
     user_id: int
+    date: datetime.date
     long_jump: float
     fifty_meter_run: float
     spider: float
@@ -150,3 +153,18 @@ async def create_user_result(user_result: UserResultCreate, db: db_dependency):
     db.commit()
     db.refresh(db_user_result)
     return db_user_result
+
+
+@router.delete("/user_results/{result_id}")
+async def delete_user_result(result_id: int, db: db_dependency):
+    result = (
+        db.query(UserResult).filter(UserResult.id == result_id).first()
+    )  # models.UserResultを使用
+    if result is None:
+        raise HTTPException(status_code=404, detail="Result not found")
+    db.delete(result)
+    db.commit()
+    return {"message": "Result deleted successfully"}
+
+
+app.include_router(router)
