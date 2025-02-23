@@ -1,5 +1,5 @@
 import datetime
-from typing import Annotated, List
+from typing import Annotated, List, Optional
 from fastapi import FastAPI, Depends, HTTPException, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, Date
@@ -27,6 +27,7 @@ class User(Base):
     name = Column(String, index=True)  # 名前カラム
     grade = Column(String)  # 学年カラムをStringに変更
     results = relationship("UserResult", back_populates="user")
+    average_max_data = relationship("AverageMaxData", back_populates="users")
 
 
 class UserResult(Base):
@@ -41,6 +42,23 @@ class UserResult(Base):
     eight_shape_run = Column(Float)
     ball_throw = Column(Float)
     user = relationship("User", back_populates="results")
+
+
+class AverageMaxData(Base):
+    __tablename__ = "average_max_data"
+    id = Column(Integer, primary_key=True, index=True)
+    grade = Column(
+        String, ForeignKey("users.grade"), index=True, nullable=False
+    )  # 学年
+    type = Column(String, index=True)  # ave or max
+    long_jump = Column(Float)  # たち幅跳び
+    fifty_meter_run = Column(Float)  # 50m走
+    spider = Column(Float)  # スパイダー
+    eight_shape_run = Column(Float)  # 8の字ラン
+    ball_throw = Column(Float)  # ボール投げ
+    total_score = Column(Float)  # 合計点
+
+    users = relationship("User", back_populates="average_max_data")
 
 
 # Pydanticモデルの定義
@@ -78,6 +96,28 @@ class UserResultRead(BaseModel):
     spider: float
     eight_shape_run: float
     ball_throw: float
+
+    class Config:
+        orm_mode = True
+
+
+class AverageMaxDataBase(BaseModel):
+    grade: str
+    type: str
+    long_jump: float
+    fifty_meter_run: float
+    spider: float
+    eight_shape_run: float
+    ball_throw: float
+    total_score: float
+
+
+class AverageMaxDataCreate(AverageMaxDataBase):
+    pass
+
+
+class AverageMaxDataRead(AverageMaxDataBase):
+    id: int
 
     class Config:
         orm_mode = True
@@ -168,3 +208,27 @@ async def delete_user_result(result_id: int, db: db_dependency):
 
 
 app.include_router(router)
+
+
+@router.post("/average_max_data/", response_model=AverageMaxDataRead)
+async def create_average_max_data(
+    average_max_data: AverageMaxDataCreate, db: db_dependency
+):
+    db_average_max_data = AverageMaxData(**average_max_data.model_dump())
+    db.add(db_average_max_data)
+    db.commit()
+    db.refresh(db_average_max_data)
+    return db_average_max_data
+
+
+@router.get(
+    "/average_max_data/grade/{grade}", response_model=Optional[AverageMaxDataRead]
+)
+async def read_average_max_data_by_grade(grade: str, db: db_dependency):
+
+    average_max_data = (
+        db.query(AverageMaxData).filter(AverageMaxData.grade == grade).first()
+    )
+    if average_max_data is None:
+        raise HTTPException(status_code=404, detail="AverageMaxData not found")
+    return average_max_data
