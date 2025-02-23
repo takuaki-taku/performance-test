@@ -1,43 +1,35 @@
-# Compiled source
-*.com
-*.class
-*.dll
-*.exe
-*.o
-*.so
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Packages
-*.egg
-*.egg-info
-dist
-build
-wheels
-__pycache__
-*.pyc
-*.pyd
+# dependencies
+/node_modules
+frontend/node_modules
+/.pnp
+.pnp.js
 
-# Environments
-.env
-.venv
-venv
-ENV
-env
+# testing
+/coverage
+frontend/coverage
 
-# Logs and databases
-*.log
-*.db
-*.sqlite
-*.sqlite3
+# production
+/build
+frontend/build
 
-# OS generated files
+# misc
 .DS_Store
-Thumbs.db
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# Editor-related files (adjust to your editor)
-.idea/
-.vscode/
-*.swp
-*.swo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Node.js
-node_modules/
+# FastAPI
+backend/*.py[cod]  # Compiled Python files
+backend/__pycache__/
+backend/.venv/
+backend/venv/
+backend/instance/
+backend/*.sqlite  # SQLite database files
+backend/*.db  # SQLite database files (alternative extension)
