@@ -1,0 +1,61 @@
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { Container, Table } from 'react-bootstrap'; // Bootstrapのコンポーネントをインポート
+
+function PhysicalTestResults() {
+    const { userId } = useParams();
+    const [results, setResults] = useState([]);
+    const [userName, setUserName] = useState('');
+
+    useEffect(() => {
+        const fetchUserResults = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8000/users/${userId}`);
+            setResults(response.data.results);
+            setUserName(response.data.name);
+        } catch (error) {
+            console.error(error);
+            alert('Failed to fetch results.');
+        }
+        };
+
+        fetchUserResults();
+    }, [userId]);
+
+    return (
+        <Container>
+        <h1>{userName}さんの体力テスト結果</h1>
+        {results && results.length > 0 ? (
+            <Table striped bordered hover>
+            <thead>
+                <tr>
+                <th>日付</th>
+                <th>立ち幅跳び</th>
+                <th>50m走</th>
+                <th>スパイダー</th>
+                <th>8の字走</th>
+                <th>ボール投げ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {results.map((result) => (
+                <tr key={result.id}>
+                    <td>{result.date}</td>
+                    <td>{result.long_jump}</td>
+                    <td>{result.fifty_meter_run}</td>
+                    <td>{result.spider}</td>
+                    <td>{result.eight_shape_run}</td>
+                    <td>{result.ball_throw}</td>
+                </tr>
+                ))}
+            </tbody>
+            </Table>
+        ) : (
+            <p>結果がありません</p>
+        )}
+        </Container>
+    );
+}
+
+export default PhysicalTestResults;

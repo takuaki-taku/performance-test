@@ -4,6 +4,8 @@ import UserList from './UserList';
 import ResultForm from './ResultForm';
 import ResultList from './ResultList';
 import axios from 'axios';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import PhysicalTestResults from './PhysicalTestResults'; // PhysicalTestResultsコンポーネントをインポート
 
 function App() {
   const [selectedUserId, setSelectedUserId] = useState(null);
@@ -42,25 +44,34 @@ function App() {
 
 
   return (
-    <div className="App">
-      <h1>Create User</h1>
-      <UserForm />
-      <h1>User List</h1>
-      <UserList onUserSelect={handleUserSelect} />
-      {selectedUserId && (
-        <div>
-          <h2>Add Result for User {selectedUserName}</h2>
-          <ResultForm userId={selectedUserId} />
-          
-          <h2>Results: {selectedUserName}</h2>
-          {selectedUserId && ( // selectedUserId が null でない場合に ResultList をレンダリング
-          <ResultList results={userResults}
-              userId={selectedUserId}
-              onResultDeleted={handleResultDeleted}/>
-          )}
-        </div>
-      )}
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/physical-test-results/:userId" element={<PhysicalTestResults />} /> {/* /physical-test-results/:userIdへのルート */}
+          <Route path="/" element={
+            <div>
+            <h1>Create User</h1>
+            <UserForm />
+            <h1>User List</h1>
+            <UserList onUserSelect={handleUserSelect} />
+              {selectedUserId && (
+                <div>
+                  <h2>Add Result for User {selectedUserName}</h2>
+                  <ResultForm userId={selectedUserId} />
+                  
+                  <h2>Results: {selectedUserName}</h2>
+                  {selectedUserId && ( // selectedUserId が null でない場合に ResultList をレンダリング
+                  <ResultList results={userResults}
+                      userId={selectedUserId}
+                      onResultDeleted={handleResultDeleted}/>
+                  )}
+                </div>
+              )}
+              </div>
+            }/>
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
