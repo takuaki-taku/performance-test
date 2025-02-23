@@ -4,13 +4,15 @@ import axios from 'axios';
 
 const ResultList = ({ results, userId, onResultDeleted }) => { // onResultDeleted を追加
   const handleDelete = async (resultId) => {
-    try {
-      await axios.delete(`http://localhost:8000/user_results/${resultId}`);
-      alert('Result deleted successfully!');
-      onResultDeleted(resultId); // ResultListを更新するためにコールバック関数を呼び出す
-    } catch (error) {
-      console.error(error);
-      alert('Failed to delete result.');
+    if (window.confirm('本当にこの結果を削除しますか？')) {
+      try {
+        await axios.delete(`http://localhost:8000/user_results/${resultId}`);
+        alert('Result deleted successfully!');
+        onResultDeleted(resultId);
+      } catch (error) {
+        console.error(error);
+        alert('Failed to delete result.');
+      }
     }
   };
 
