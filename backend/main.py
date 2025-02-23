@@ -1,10 +1,11 @@
 from fastapi import FastAPI, Depends, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, Date
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session, relationship
 from pydantic import BaseModel
 from typing import Annotated, List
+import datetime
 
 # データベースの設定
 DATABASE_URL = "sqlite:///./test.db"  # SQLiteデータベースのURL
@@ -31,7 +32,7 @@ class UserResult(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=False)
-    category = Column(String, index=True)
+    date = Column(Date, nullable=False)  # Dateカラムを追加
     long_jump = Column(Float)
     fifty_meter_run = Column(Float)
     spider = Column(Float)
@@ -47,17 +48,18 @@ class UserCreate(BaseModel):
 
 
 class UserRead(BaseModel):
-    id: int  # ID
-    name: str  # 名前
-    grade: str  # 学年をStringに変更
+    id: int
+    name: str
+    grade: str
+    results: List["UserResultRead"]  # UserResultReadのリストを追加
 
     class Config:
-        orm_mode = True  # ORMモードを有効化
+        orm_mode = True
 
 
 class UserResultCreate(BaseModel):
     user_id: int
-    category: str
+    date: datetime.date  # Dateフィールドを追加
     long_jump: float
     fifty_meter_run: float
     spider: float
@@ -68,7 +70,6 @@ class UserResultCreate(BaseModel):
 class UserResultRead(BaseModel):
     id: int
     user_id: int
-    category: str
     long_jump: float
     fifty_meter_run: float
     spider: float
@@ -77,10 +78,6 @@ class UserResultRead(BaseModel):
 
     class Config:
         orm_mode = True
-
-
-class UserWithResults(UserRead):
-    results: List[UserResultRead] = []
 
 
 # データベースの作成
@@ -133,6 +130,10 @@ async def read_user(user_id: int, db: db_dependency):
         raise HTTPException(
             status_code=404, detail="User not found"
         )  # ユーザーが見つからない場合はエラーを返す
+    # ユーザーに結果データが登録されていない場合に空のリストを返す
+    if not user.results:
+        user.results = []
+
     return user  # ユーザーを返す
 
 
