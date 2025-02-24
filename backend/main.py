@@ -207,9 +207,6 @@ async def delete_user_result(result_id: int, db: db_dependency):
     return {"message": "Result deleted successfully"}
 
 
-app.include_router(router)
-
-
 @router.post("/average_max_data/", response_model=AverageMaxDataRead)
 async def create_average_max_data(
     average_max_data: AverageMaxDataCreate, db: db_dependency
@@ -221,14 +218,15 @@ async def create_average_max_data(
     return db_average_max_data
 
 
-@router.get(
-    "/average_max_data/grade/{grade}", response_model=Optional[AverageMaxDataRead]
-)
+@router.get("/average_max_data/grade/{grade}", response_model=List[AverageMaxDataRead])
 async def read_average_max_data_by_grade(grade: str, db: db_dependency):
 
     average_max_data = (
-        db.query(AverageMaxData).filter(AverageMaxData.grade == grade).first()
+        db.query(AverageMaxData).filter(AverageMaxData.grade == grade).all()
     )
     if average_max_data is None:
         raise HTTPException(status_code=404, detail="AverageMaxData not found")
     return average_max_data
+
+
+app.include_router(router)

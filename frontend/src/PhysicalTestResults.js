@@ -70,8 +70,8 @@ function PhysicalTestResults() {
             )}
 
             {/* AverageMaxDataの表示 */}
-            <h2>平均/最大データ</h2>
-            {averageMaxData ? (
+            <h2>2023年度の全国大会平均/最大データ</h2>
+            {averageMaxData && averageMaxData.length > 0 ? (
                 <Table striped bordered hover>
                     <thead>
                         <tr>
@@ -85,15 +85,17 @@ function PhysicalTestResults() {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>{averageMaxData.type}</td>
-                            <td>{averageMaxData.long_jump}</td>
-                            <td>{averageMaxData.fifty_meter_run}</td>
-                            <td>{averageMaxData.spider}</td>
-                            <td>{averageMaxData.eight_shape_run}</td>
-                            <td>{averageMaxData.ball_throw}</td>
-                            <td>{averageMaxData.total_score}</td>
-                        </tr>
+                        {averageMaxData.map((data) => (
+                            <tr key={data.id}>
+                                <td>{data.type}</td>
+                                <td>{data.long_jump}</td>
+                                <td>{data.fifty_meter_run}</td>
+                                <td>{data.spider}</td>
+                                <td>{data.eight_shape_run}</td>
+                                <td>{data.ball_throw}</td>
+                                <td>{data.total_score}</td>
+                            </tr>
+                        ))}
                     </tbody>
                 </Table>
             ) : (
