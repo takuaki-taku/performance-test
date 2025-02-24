@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Container, Table } from 'react-bootstrap'; // Bootstrapのコンポーネントをインポート
+import { Container, Table } from 'react-bootstrap';
+import moment from 'moment'; // moment.js をインポート
+import 'moment/locale/ja'; // 日本語ロケールをインポート
+
+moment.locale('ja'); // 日本語ロケールを設定
 
 function PhysicalTestResults() {
     const { userId } = useParams();
     const [results, setResults] = useState([]);
     const [userName, setUserName] = useState('');
-    const [averageMaxData, setAverageMaxData] = useState(null); // AverageMaxData用のstateを追加
+    const [averageMaxData, setAverageMaxData] = useState(null);
 
     useEffect(() => {
         const fetchUserResults = async () => {
@@ -16,12 +20,9 @@ function PhysicalTestResults() {
                 setResults(response.data.results);
                 setUserName(response.data.name);
 
-                // ユーザーの grade を取得
                 const userGrade = response.data.grade;
 
-                // grade に基づいて AverageMaxData を取得
                 if (userGrade) {
-                    // URLエンコードを避けるためにテンプレートリテラルを使用
                     const averageMaxDataResponse = await axios.get(`http://localhost:8000/average_max_data/grade/${encodeURIComponent(userGrade)}`);
                     setAverageMaxData(averageMaxDataResponse.data);
                 } else {
@@ -55,7 +56,7 @@ function PhysicalTestResults() {
                     <tbody>
                         {results.map((result) => (
                             <tr key={result.id}>
-                                <td>{result.date}</td>
+                                <td>{moment(result.date).format('YYYY年MM月DD日')}</td> {/* 日付をフォーマット */}
                                 < td>{result.long_jump} m</td >
                                 < td>{result.fifty_meter_run} 秒</td >
                                 < td>{result.spider} 秒</td >
@@ -69,7 +70,6 @@ function PhysicalTestResults() {
                 <p>結果がありません</p>
             )}
 
-            {/* AverageMaxDataの表示 */}
             <h2>2023年度の全国大会平均/最大データ</h2>
             {averageMaxData && averageMaxData.length > 0 ? (
                 <Table striped bordered hover>
