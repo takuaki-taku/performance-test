@@ -56,10 +56,10 @@ function PhysicalTestResults() {
                         {results.map((result) => (
                             <tr key={result.id}>
                                 <td>{result.date}</td>
-                                < td>{result.long_jump} cm</td >
+                                < td>{result.long_jump} m</td >
                                 < td>{result.fifty_meter_run} 秒</td >
-                                < td>{result.spider} 回</td >
-                                < td>{result.eight_shape_run} 秒</td >
+                                < td>{result.spider} 秒</td >
+                                < td>{result.eight_shape_run} 回</td >
                                 < td>{result.ball_throw} m</td >
                             </tr>
                         ))}
