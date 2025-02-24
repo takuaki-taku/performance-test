@@ -56,11 +56,11 @@ function PhysicalTestResults() {
                         {results.map((result) => (
                             <tr key={result.id}>
                                 <td>{result.date}</td>
-                                <td>{result.long_jump}</td>
-                                <td>{result.fifty_meter_run}</td>
-                                <td>{result.spider}</td>
-                                <td>{result.eight_shape_run}</td>
-                                <td>{result.ball_throw}</td>
+                                < td>{result.long_jump} m</td >
+                                < td>{result.fifty_meter_run} 秒</td >
+                                < td>{result.spider} 秒</td >
+                                < td>{result.eight_shape_run} 回</td >
+                                < td>{result.ball_throw} m</td >
                             </tr>
                         ))}
                     </tbody>
@@ -88,12 +88,12 @@ function PhysicalTestResults() {
                         {averageMaxData.map((data) => (
                             <tr key={data.id}>
                                 <td>{data.type}</td>
-                                <td>{data.long_jump}</td>
-                                <td>{data.fifty_meter_run}</td>
-                                <td>{data.spider}</td>
-                                <td>{data.eight_shape_run}</td>
-                                <td>{data.ball_throw}</td>
-                                <td>{data.total_score}</td>
+                                < td>{data.long_jump} m</td >
+                                < td>{data.fifty_meter_run} 秒</td >
+                                < td>{data.spider} 秒</td >
+                                < td>{data.eight_shape_run} 回</td >
+                                < td>{data.ball_throw} m</td >
+                                <td>{data.total_score}点</td>
                             </tr>
                         ))}
                     </tbody>
