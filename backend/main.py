@@ -1,5 +1,5 @@
 import datetime
-from typing import Annotated, List, Optional
+from typing import Annotated, List
 from fastapi import FastAPI, Depends, HTTPException, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, Date
@@ -129,18 +129,19 @@ Base.metadata.create_all(bind=engine)  # テーブルを作成
 # FastAPIアプリケーションの作成
 app = FastAPI()
 
-# CORSミドルウェアの設定
 origins = [
-    "http://localhost:3000",  # Reactアプリケーションのオリジン
-    "http://localhost:8000",  # FastAPIアプリケーションのオリジン
+    "http://localhost:3000",  # クライアントのオリジン
+    "http://localhost:8000",  # サーバーのオリジン (必要に応じて)
+    "http://localhost",  # 必要に応じて
+    "*",  # 開発環境でのみ使用を推奨
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # 許可するオリジン
-    allow_credentials=True,  # クレデンシャルを許可するか
-    allow_methods=["*"],  # 許可するHTTPメソッド
-    allow_headers=["*"],  # 許可するHTTPヘッダー
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 

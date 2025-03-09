@@ -1,0 +1,21 @@
+{
+    "name": "My Dev Container",
+    "build": {
+      "dockerfile": "Dockerfile"
+    },
+    "features": {
+      "ghcr.io/devcontainers/features/python:1": {
+        "version": "3.11"
+      },
+      "ghcr.io/devcontainers/features/node:1": {
+        "version": "18"
+      }
+    },
+    "postCreateCommand": "pip install -r ./backend/requirements.txt && cd ./frontend2 && npm install && cd ..",
+    "portsAttributes": {
+      "3000": {
+        "label": "Application",
+        "onAutoForward": "openBrowser"
+      }
+    }
+  }
