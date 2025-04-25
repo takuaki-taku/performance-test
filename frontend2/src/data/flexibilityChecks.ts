@@ -3,26 +3,62 @@ import { FlexibilityCheck } from '@/types/flexibility';
 export const flexibilityChecks: FlexibilityCheck[] = [
   {
     id: 1,
-    title: '前屈テスト',
-    image: '/images/flexibility/forward-bend.jpg',
-    description: '立った状態から前屈を行い、手が床に届く距離を測定します。股関節とハムストリングスの柔軟性を評価します。'
+    title: 'Bent forward',
+    image: '/images/flexibility/1.bent_forword.PNG',
+    description: '拳が地面につけばOK'
   },
   {
     id: 2,
-    title: '開脚テスト',
-    image: '/images/flexibility/split.jpg',
-    description: '床に座り、両脚を最大限に開脚します。股関節の可動域と内転筋の柔軟性を評価します。'
+    title: 'Quad stretch',
+    image: '/images/flexibility/2.quad_stretch.PNG',
+    description: '隙間が拳一個分以内なら'
   },
   {
     id: 3,
-    title: '肩関節可動域テスト',
-    image: '/images/flexibility/shoulder.jpg',
-    description: '両手を後ろで組み、肩関節の可動域を測定します。肩甲骨の柔軟性と肩関節の可動域を評価します。'
+    title: 'The split',
+    image: '/images/flexibility/3.the_split.PNG',
+    description: '肘が地面につけばOK\nおでこがつけばベリーグッド'
   },
   {
     id: 4,
-    title: '体幹回旋テスト',
-    image: '/images/flexibility/trunk-rotation.jpg',
-    description: '座った状態で体幹を回旋し、可動域を測定します。体幹の柔軟性と回旋可動域を評価します。'
+    title: 'Butterfly',
+    image: '/images/flexibility/4.butterfly.PNG',
+    description: '足裏合わせて、膝と地面が拳一個分以内ならOK'
+  },
+  {
+    id: 5,
+    title: 'Spine twist',
+    image: '/images/flexibility/5.spine_twist.PNG',
+    description: '膝を揃えてつけながら、肩がつけばOK'
+  },
+  {
+    id: 5.5,
+    title: 'Spine twist (別角度)',
+    image: '/images/flexibility/5.5.spine_twist.PNG',
+    description: '膝を揃えてつけながら、肩がつけばOK'
+  },
+  {
+    id: 6,
+    title: 'Shoulder flexibility',
+    image: '/images/flexibility/6.Shoulder_flexibility.PNG',
+    description: '後ろで手が組めるか両方\n※特に利き手が下の方'
+  },
+  {
+    id: 7,
+    title: 'ブリッジ',
+    image: '/images/flexibility/7.bridge.PNG',
+    description: 'ブリッジ'
+  },
+  {
+    id: 8,
+    title: 'Ankle mobility',
+    image: '/images/flexibility/8.ankle.PNG',
+    description: 'かかとをついたまましゃがめるか\nステップ1　手を前にしてOK\nステップ2　手を後ろで組む'
+  },
+  {
+    id: 8.5,
+    title: 'Ankle mobility (別角度)',
+    image: '/images/flexibility/8.5.ankle.PNG',
+    description: 'かかとをついたまましゃがめるか\nステップ1　手を前にしてOK\nステップ2　手を後ろで組む'
   }
 ]; 
