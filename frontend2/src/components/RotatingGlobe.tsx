@@ -4,7 +4,7 @@ import { Canvas, useFrame, useLoader } from '@react-three/fiber'
 import { OrbitControls, Stars } from '@react-three/drei'
 import { TextureLoader, LinearFilter, ClampToEdgeWrapping, DoubleSide } from 'three'
 import type { Mesh } from 'three'
-import { useRef, useMemo, useEffect, Suspense } from 'react'
+import { Suspense, useRef, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 /** 地球儀メッシュ */
@@ -36,7 +36,7 @@ function Globe() {
   useFrame((state, delta) => {
     const time = state.clock.getElapsedTime()
     // 基本速度（0.05）にサイン波で変化（±0.02）を追加
-    const speed = 0.05 + Math.sin(time * 1.5) * 0.02
+    const speed = 1 + Math.sin(time * 1.5) * 0.02
     ref.current.rotation.y += delta * speed
   })
 
@@ -48,11 +48,9 @@ function Globe() {
       onPointerOut={() => (document.body.style.cursor = 'auto')}
     >
       <planeGeometry args={planeArgs} />
-      <meshStandardMaterial
+      <meshBasicMaterial
         map={texture}
         side={DoubleSide}
-        emissive={0xffffff}
-        emissiveIntensity={0.8}
         toneMapped={false}
       />
     </mesh>
