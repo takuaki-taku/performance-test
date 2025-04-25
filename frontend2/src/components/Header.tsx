@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 
 const Header = () => {
@@ -10,18 +11,24 @@ const Header = () => {
     <header className="bg-white shadow-md">
       <nav className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold text-gray-800">
-            Logo
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/images/logo/logo.png"
+              alt="サイトロゴ"
+              width={120}
+              height={40}
+              className="object-contain"
+            />
+            <span className="ml-2 text-2xl font-bold text-gray-800">
+            [と]レーニング
+            </span>
           </Link>
           
           {/* デスクトップメニュー */}
           <div className="hidden md:flex space-x-8">
-            <Link href="/" className="text-gray-600 hover:text-gray-900">
-              Home
-            </Link>
-            <Link href="/flexibility" className="text-gray-600 hover:text-gray-900">
-              柔軟性チェック
-            </Link>
+            <Link href="/"        className="text-gray-600 hover:text-gray-900">Home</Link>
+            <Link href="/test-results" className="text-gray-600 hover:text-gray-900">Test Results</Link>
+            <Link href="/strength"  className="text-gray-600 hover:text-gray-900">Stretch</Link>
             <Link href="/about" className="text-gray-600 hover:text-gray-900">
               About
             </Link>
