@@ -29,7 +29,8 @@ function App() {
         const fetchUserResults = async () => {
             if (selectedUserId) {
                 try {
-                    const response = await axios.get(`http://localhost:8000/users/${selectedUserId}`);
+                    const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+                    const response = await axios.get(`${apiBase}/users/${selectedUserId}`);
                     console.log("API Response:", response.data); // データの確認
                     setUserResults(response.data.results);
                     setSelectedUserName(response.data.name); // ユーザー名を設定
