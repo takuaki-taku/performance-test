@@ -22,7 +22,8 @@ const ResultList: React.FC<ResultListProps> = ({ results, onResultDeleted }) => 
     const handleDelete = async (resultId: number) => {
         if (window.confirm('本当にこの結果を削除しますか？')) {
             try {
-                await axios.delete(`http://localhost:8000/user_results/${resultId}`);
+                const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+                await axios.delete(`${apiBase}/user_results/${resultId}`);
                 alert('Result deleted successfully!');
                 onResultDeleted(resultId);
             } catch (error: unknown) {

@@ -73,7 +73,8 @@ function PhysicalTestResults({ userId }: PhysicalTestResultsProps) {
         const fetchUserResults = async () => {
             if (userId) {
                 try {
-                    const response = await axios.get(`http://localhost:8000/users/${userId}`);
+                    const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+                    const response = await axios.get(`${apiBase}/users/${userId}`);
                     console.log("API Response (fetchUserResults):", response.data); // APIレスポンスの確認
                     setResults(response.data.results);
                     setUserName(response.data.name);
@@ -94,7 +95,8 @@ function PhysicalTestResults({ userId }: PhysicalTestResultsProps) {
         const fetchUserData = async () => {
             if (userId) {
                 try {
-                    const userResponse = await axios.get(`http://localhost:8000/users/${userId}`);
+                    const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+                    const userResponse = await axios.get(`${apiBase}/users/${userId}`);
                     console.log("API Response (fetchUserData):", userResponse.data); // APIレスポンスの確認
                     
                     setUserName(userResponse.data.name);
@@ -109,7 +111,8 @@ function PhysicalTestResults({ userId }: PhysicalTestResultsProps) {
         const fetchAverageMaxData = async () => {
             if (nationalDataGrade) {
                 try {
-                    const averageMaxDataResponse = await axios.get(`http://localhost:8000/average_max_data/grade/${nationalDataGrade}`);
+                    const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+                    const averageMaxDataResponse = await axios.get(`${apiBase}/average_max_data/grade/${nationalDataGrade}`);
                     console.log("API Response (fetchAverageMaxData):", averageMaxDataResponse.data); // APIレスポンスの確認
                     setAverageMaxData(averageMaxDataResponse.data);
                 } catch (error: unknown) {

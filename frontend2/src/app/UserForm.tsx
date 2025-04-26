@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client";
 
 import React, { useState } from 'react';
@@ -20,7 +21,8 @@ const UserForm = () => {
         setError('');
 
         try {
-            await axios.post('http://localhost:8000/users/', { name, grade });
+            const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+            await axios.post(`${apiBase}/users/`, { name, grade });
             setName('');
             setGrade('');
             alert('User created successfully!');

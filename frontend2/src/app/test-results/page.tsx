@@ -39,7 +39,8 @@ export default function TestResultsPage() {
         return
       }
       try {
-        const res = await axios.get(`http://localhost:8000/users/${selectedUserId}`)
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+        const res = await axios.get(`${apiBase}/users/${selectedUserId}`)
         setUserResults(res.data.results)
         setSelectedUserName(res.data.name)
       } catch {

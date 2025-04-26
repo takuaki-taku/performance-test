@@ -24,7 +24,8 @@ const UserList: React.FC<UserListProps> = ({ onUserSelect }) => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/users/');
+                const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+                const response = await axios.get(`${apiBase}/users/`);
                 setUsers(response.data);
             } catch (error: unknown) {
                 console.error(error);
