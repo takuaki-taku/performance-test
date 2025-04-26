@@ -1,30 +1,9 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment, @typescript-eslint/no-unused-vars */
 'use client';
 
 import dynamic from 'next/dynamic';
 import Container from '@/components/Container';
-import { useState, useEffect } from 'react';
-import UserForm from './UserForm';
-import UserList from './UserList';
-import ResultForm from './ResultForm';
-import ResultList from './ResultList';
-import axios from 'axios';
-import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import { Navigation, Autoplay } from 'swiper/modules';
-import 'swiper/css/autoplay';
-
-interface Result {
-  id: number;
-  date: string;
-  long_jump: number;
-  fifty_meter_run: number;
-  spider: number;
-  eight_shape_run: number;
-  ball_throw: number;
-}
 
 // サーバーサイドは無視してクライアントのみでロード
 const RotatingGlobe = dynamic(
