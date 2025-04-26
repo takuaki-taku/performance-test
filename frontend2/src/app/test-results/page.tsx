@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import Container from '@/components/Container'
 import { useState, useEffect } from 'react'
 import UserForm from '../UserForm'
@@ -7,7 +9,7 @@ import UserList from '../UserList'
 import ResultForm from '../ResultForm'
 import ResultList from '../ResultList'
 import axios from 'axios'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 interface Result {
     id: number;
@@ -19,28 +21,24 @@ interface Result {
     ball_throw: number;
   }
 
-export default function TestResultsPage() {
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null)
+export default function TestResultsPage(props: any) {
+  const searchParams = props.searchParams as { userId?: string }
+  const userIdParam = searchParams.userId
+  const userId = userIdParam ? Number(userIdParam) : null
   const [selectedUserName, setSelectedUserName] = useState<string | null>(null)
   const [userResults, setUserResults] = useState<Result[] | null>(null)
   const router = useRouter()
-  const searchParams = useSearchParams()
-
-  useEffect(() => {
-    const userId = searchParams.get('userId')
-    if (userId) setSelectedUserId(Number(userId))
-  }, [searchParams])
 
   useEffect(() => {
     const fetchUserResults = async () => {
-      if (!selectedUserId) {
+      if (!userId) {
         setUserResults([])
         setSelectedUserName(null)
         return
       }
       try {
-        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
-        const res = await axios.get(`${apiBase}/users/${selectedUserId}`)
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'
+        const res = await axios.get(`${apiBase}/users/${userId}`)
         setUserResults(res.data.results)
         setSelectedUserName(res.data.name)
       } catch {
@@ -48,10 +46,9 @@ export default function TestResultsPage() {
       }
     }
     fetchUserResults()
-  }, [selectedUserId])
+  }, [userId])
 
   const handleUserSelect = (userId: number) => {
-    setSelectedUserId(userId)
     router.push(`/test-results?userId=${userId}`)
   }
 
@@ -86,13 +83,13 @@ export default function TestResultsPage() {
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">
               Test Results
             </h2>
-            {selectedUserId ? (
+            {userId ? (
               <>
                 <div className="mb-6">
                   <h3 className="text-xl font-semibold text-gray-800 mb-4">
                     Add Result for {selectedUserName}
                   </h3>
-                  <ResultForm userId={selectedUserId} />
+                  <ResultForm userId={userId} />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gray-800 mb-4">
@@ -100,7 +97,7 @@ export default function TestResultsPage() {
                   </h3>
                   <ResultList
                     results={userResults}
-                    userId={selectedUserId}
+                    userId={userId}
                     onResultDeleted={handleResultDeleted}
                   />
                 </div>
