@@ -1,16 +1,15 @@
 'use client'
 
-export const dynamic = 'force-dynamic'
-
+import { useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useAuth } from '@/hooks/useAuth'
 import Container from '@/components/Container'
-import { useState, useEffect } from 'react'
 import UserForm from '../../components/UserForm'
 import UserList from '../../components/UserList'
 import ResultForm from '../../components/ResultForm'
 import ResultList from '../../components/ResultList'
 import axios from 'axios'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useAuth } from '@/hooks/useAuth'
+import { useState } from 'react'
 
 interface Result {
     id: number;
@@ -22,7 +21,7 @@ interface Result {
     ball_throw_cm: number;
   }
 
-export default function TestResultsPage() {
+function TestResultsContent() {
   const isAuthenticated = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -131,5 +130,13 @@ export default function TestResultsPage() {
         </div>
       </div>
     </Container>
+  )
+}
+
+export default function TestResultsPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center min-h-screen">読み込み中...</div>}>
+      <TestResultsContent />
+    </Suspense>
   )
 } 
