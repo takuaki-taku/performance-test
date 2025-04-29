@@ -1,9 +1,9 @@
-// @ts-nocheck
+
 "use client";
 
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Form, Button, Alert } from 'react-bootstrap';
+import { Form, Alert } from 'react-bootstrap';
 
 const UserForm = () => {
     const [name, setName] = useState<string>('');
@@ -51,9 +51,9 @@ const UserForm = () => {
                     onChange={(e) => setGrade(e.target.value)}
                 />
             </Form.Group>
-            <Button variant="primary" type="submit">
+            <button className="btn btn-primary" type="submit">
                 Create User
-            </Button>
+            </button>
         </Form>
     );
 };

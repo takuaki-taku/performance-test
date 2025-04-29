@@ -1,29 +1,20 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment, @typescript-eslint/no-unused-vars */
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import UserForm from './UserForm';
-import UserList from './UserList';
-import ResultForm from './ResultForm';
-import ResultList from './ResultList';
+import UserForm from '../components/UserForm';
+import UserList from '../components/UserList';
+import ResultForm from '../components/ResultForm';
+import ResultList from '../components/ResultList';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-
-interface Result {
-    id: number;
-    date: string;
-    long_jump: number;
-    fifty_meter_run: number;
-    spider: number;
-    eight_shape_run: number;
-    ball_throw: number;
-}
+import { Result } from '@/types/Result';
 
 function App() {
     const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-    const [selectedUserName, setSelectedUserName] = useState<string | null>(null); // 名前を保持する新しいstate
-    const [userResults, setUserResults] = useState<Result[] | null>(null); // 初期値を null に変更
+    const [selectedUserName, setSelectedUserName] = useState<string | null>(null);
+    const [userResults, setUserResults] = useState<Result[] | null>(null);
     const router = useRouter();
-
 
     useEffect(() => {
         const fetchUserResults = async () => {
@@ -31,16 +22,16 @@ function App() {
                 try {
                     const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
                     const response = await axios.get(`${apiBase}/users/${selectedUserId}`);
-                    console.log("API Response:", response.data); // データの確認
+                    console.log("API Response:", response.data);
                     setUserResults(response.data.results);
-                    setSelectedUserName(response.data.name); // ユーザー名を設定
-                    } catch (error: unknown) { // <= any を unknown に変更
-                        console.error(error);
-                        alert('Failed to create user.');
-                    }
+                    setSelectedUserName(response.data.name);
+                } catch (error: unknown) {
+                    console.error(error);
+                    alert('Failed to create user.');
+                }
             } else {
-                setUserResults([]); // selectedUserId が null の場合も null を設定
-                setSelectedUserName(null); // selectedUserId が null の場合も null を設定
+                setUserResults([]);
+                setSelectedUserName(null);
             }
         };
         fetchUserResults();
@@ -48,13 +39,12 @@ function App() {
 
     const handleUserSelect = (userId: number) => {
         setSelectedUserId(userId);
-        router.push(`/?userId=${userId}`); // ユーザー選択時にURLを更新
+        router.push(`/?userId=${userId}`);
     };
 
     const handleResultDeleted = (deletedResultId: number) => {
         setUserResults(prevResults => prevResults!.filter(result => result.id !== deletedResultId));
     };
-
 
     return (
         <div className="App" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -68,10 +58,12 @@ function App() {
                     <ResultForm userId={selectedUserId} />
 
                     <h2>Results: {selectedUserName}</h2>
-                    {selectedUserId && ( // selectedUserId が null でない場合に ResultList をレンダリング
-                        <ResultList results={userResults}
+                    {selectedUserId && (
+                        <ResultList
+                            results={userResults}
                             userId={selectedUserId}
-                            onResultDeleted={handleResultDeleted} />
+                            onResultDeleted={handleResultDeleted}
+                        />
                     )}
                 </div>
             )}

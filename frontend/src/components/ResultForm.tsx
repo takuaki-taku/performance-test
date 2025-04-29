@@ -1,4 +1,5 @@
-// @ts-nocheck
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 "use client";
 
 import React, { useState } from 'react';
@@ -64,7 +65,7 @@ const ResultForm: React.FC<ResultFormProps> = ({ userId }) => {
             <InputGroup label="Spider:" type="number" value={spider} onChange={e => setSpider(e.target.value)} />
             <InputGroup label="8-Shape Run:" type="number" value={eightShapeRun} onChange={e => setEightShapeRun(e.target.value)} />
             <InputGroup label="Ball Throw:" type="number" value={ballThrow} onChange={e => setBallThrow(e.target.value)} />
-            <Button variant="primary" type="submit">Create Result</Button>
+            <button className="btn btn-primary" type="submit">Create Result</button>
         </Form>
     );
 };

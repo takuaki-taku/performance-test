@@ -59,18 +59,33 @@ function Globe() {
 
 export default function RotatingGlobe() {
   return (
-    <div className="w-full h-[60vh]">
-      <Canvas frameloop="always" camera={{ position: [0, 0, 5] }}>
-        <ambientLight intensity={0.7} />
-        <pointLight position={[5, 5, 5]} intensity={1} />
-        <directionalLight position={[0, 0, 5]} intensity={0.5} />
-
+    <div className="relative h-[50vh] w-full">
+      <Canvas frameloop="always">
         <Suspense fallback={null}>
           <Globe />
+          <OrbitControls enableZoom={false} enablePan={false} />
+          <Stars />
         </Suspense>
-        <OrbitControls enableZoom={false} />
-        <Stars radius={100} depth={50} count={5000} factor={4} fade />
       </Canvas>
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-center">
+        <p className="text-white text-lg font-bold mb-2">クリックして柔軟性チェックを始めましょう</p>
+        <div className="animate-bounce">
+          <svg
+            className="w-6 h-6 mx-auto text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 14l-7 7m0 0l-7-7m7 7V3"
+            />
+          </svg>
+        </div>
+      </div>
     </div>
   )
 } 

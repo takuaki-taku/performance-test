@@ -1,62 +1,79 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import Container from '@/components/Container'
 import { useState, useEffect } from 'react'
-import UserForm from '../UserForm'
-import UserList from '../UserList'
-import ResultForm from '../ResultForm'
-import ResultList from '../ResultList'
+import UserForm from '../../components/UserForm'
+import UserList from '../../components/UserList'
+import ResultForm from '../../components/ResultForm'
+import ResultList from '../../components/ResultList'
 import axios from 'axios'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useAuth } from '@/hooks/useAuth'
 
 interface Result {
     id: number;
     date: string;
-    long_jump: number;
-    fifty_meter_run: number;
-    spider: number;
-    eight_shape_run: number;
-    ball_throw: number;
+    long_jump_cm: number;
+    fifty_meter_run_ms: number;
+    spider_ms: number;
+    eight_shape_run_count: number;
+    ball_throw_cm: number;
   }
 
 export default function TestResultsPage() {
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null)
-  const [selectedUserName, setSelectedUserName] = useState<string | null>(null)
-  const [userResults, setUserResults] = useState<Result[] | null>(null)
+  const isAuthenticated = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
+  const userIdParam = searchParams.get('userId')
+  const userId = userIdParam ? Number(userIdParam) : null
+  const [selectedUserName, setSelectedUserName] = useState<string | null>(null)
+  const [userResults, setUserResults] = useState<Result[] | null>(null)
 
   useEffect(() => {
-    const userId = searchParams.get('userId')
-    if (userId) setSelectedUserId(Number(userId))
-  }, [searchParams])
+    if (isAuthenticated === false) {
+      router.push('/login')
+    }
+  }, [isAuthenticated, router])
 
   useEffect(() => {
     const fetchUserResults = async () => {
-      if (!selectedUserId) {
+      if (!userId) {
         setUserResults([])
         setSelectedUserName(null)
         return
       }
       try {
-        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
-        const res = await axios.get(`${apiBase}/users/${selectedUserId}`)
-        setUserResults(res.data.results)
-        setSelectedUserName(res.data.name)
-      } catch {
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'
+        const [userResponse, resultsResponse] = await Promise.all([
+          axios.get(`${apiBase}/users/${userId}`),
+          axios.get(`${apiBase}/user_results/${userId}`)
+        ])
+        setUserResults(resultsResponse.data)
+        setSelectedUserName(userResponse.data.name)
+      } catch (error) {
+        console.error('データ取得に失敗しました:', error)
         alert('データ取得に失敗しました')
       }
     }
     fetchUserResults()
-  }, [selectedUserId])
+  }, [userId])
 
   const handleUserSelect = (userId: number) => {
-    setSelectedUserId(userId)
     router.push(`/test-results?userId=${userId}`)
   }
 
   const handleResultDeleted = (deletedId: number) => {
     setUserResults(prev => prev!.filter(r => r.id !== deletedId))
+  }
+
+  if (isAuthenticated === null) {
+    return <div className="flex justify-center items-center min-h-screen">読み込み中...</div>
+  }
+
+  if (!isAuthenticated) {
+    return null // リダイレクト中は何も表示しない
   }
 
   return (
@@ -86,13 +103,13 @@ export default function TestResultsPage() {
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">
               Test Results
             </h2>
-            {selectedUserId ? (
+            {userId ? (
               <>
                 <div className="mb-6">
                   <h3 className="text-xl font-semibold text-gray-800 mb-4">
                     Add Result for {selectedUserName}
                   </h3>
-                  <ResultForm userId={selectedUserId} />
+                  <ResultForm userId={userId} />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gray-800 mb-4">
@@ -100,7 +117,7 @@ export default function TestResultsPage() {
                   </h3>
                   <ResultList
                     results={userResults}
-                    userId={selectedUserId}
+                    userId={userId}
                     onResultDeleted={handleResultDeleted}
                   />
                 </div>

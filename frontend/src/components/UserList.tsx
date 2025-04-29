@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 "use client";
 
 import axios from 'axios';
@@ -48,12 +48,12 @@ const UserList: React.FC<UserListProps> = ({ onUserSelect }) => {
                     style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 >
                     <div>{user.name} (Grade: {user.grade})</div>
-                    <Button variant="primary" style={{ marginLeft: '10px' }} onClick={(e) => {
+                    <button className="btn btn-primary" style={{ marginLeft: '10px' }} onClick={(e) => {
                         e.stopPropagation(); // イベント伝播を停止
                         router.push(`/physical-test-results/${user.id}`);
                     }}>
                         詳細
-                    </Button>
+                    </button>
                 </ListGroup.Item>
             ))}
         </ListGroup>
