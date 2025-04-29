@@ -9,25 +9,33 @@ import UserList from '../UserList'
 import ResultForm from '../ResultForm'
 import ResultList from '../ResultList'
 import axios from 'axios'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useAuth } from '@/hooks/useAuth'
 
 interface Result {
     id: number;
     date: string;
-    long_jump: number;
-    fifty_meter_run: number;
-    spider: number;
-    eight_shape_run: number;
-    ball_throw: number;
+    long_jump_cm: number;
+    fifty_meter_run_ms: number;
+    spider_ms: number;
+    eight_shape_run_count: number;
+    ball_throw_cm: number;
   }
 
-export default function TestResultsPage(props: any) {
-  const searchParams = props.searchParams as { userId?: string }
-  const userIdParam = searchParams.userId
+export default function TestResultsPage() {
+  const isAuthenticated = useAuth()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const userIdParam = searchParams.get('userId')
   const userId = userIdParam ? Number(userIdParam) : null
   const [selectedUserName, setSelectedUserName] = useState<string | null>(null)
   const [userResults, setUserResults] = useState<Result[] | null>(null)
-  const router = useRouter()
+
+  useEffect(() => {
+    if (isAuthenticated === false) {
+      router.push('/login')
+    }
+  }, [isAuthenticated, router])
 
   useEffect(() => {
     const fetchUserResults = async () => {
@@ -38,10 +46,14 @@ export default function TestResultsPage(props: any) {
       }
       try {
         const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'
-        const res = await axios.get(`${apiBase}/users/${userId}`)
-        setUserResults(res.data.results)
-        setSelectedUserName(res.data.name)
-      } catch {
+        const [userResponse, resultsResponse] = await Promise.all([
+          axios.get(`${apiBase}/users/${userId}`),
+          axios.get(`${apiBase}/user_results/${userId}`)
+        ])
+        setUserResults(resultsResponse.data)
+        setSelectedUserName(userResponse.data.name)
+      } catch (error) {
+        console.error('データ取得に失敗しました:', error)
         alert('データ取得に失敗しました')
       }
     }
@@ -54,6 +66,14 @@ export default function TestResultsPage(props: any) {
 
   const handleResultDeleted = (deletedId: number) => {
     setUserResults(prev => prev!.filter(r => r.id !== deletedId))
+  }
+
+  if (isAuthenticated === null) {
+    return <div className="flex justify-center items-center min-h-screen">読み込み中...</div>
+  }
+
+  if (!isAuthenticated) {
+    return null // リダイレクト中は何も表示しない
   }
 
   return (
