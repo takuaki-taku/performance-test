@@ -74,8 +74,11 @@ const Header = () => {
               <Link href="/" className="text-gray-600 hover:text-gray-900">
                 Home
               </Link>
+              <Link href="/test-results" className="text-gray-600 hover:text-gray-900">
+                Test Results
+              </Link>
               <Link href="/flexibility" className="text-gray-600 hover:text-gray-900">
-                柔軟性チェック
+                Stretch
               </Link>
               <Link href="/about" className="text-gray-600 hover:text-gray-900">
                 About

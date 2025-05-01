@@ -11,7 +11,7 @@ export const flexibilityChecks: FlexibilityCheck[] = [
     id: 2,
     title: 'Quad stretch',
     image: '/images/flexibility/2.quad_stretch.PNG',
-    description: '隙間が拳一個分以内なら'
+    description: 'お尻と踵の隙間が拳一個分以内ならOK'
   },
   {
     id: 3,
@@ -33,7 +33,7 @@ export const flexibilityChecks: FlexibilityCheck[] = [
   },
   {
     id: 5.5,
-    title: 'Spine twist (別角度)',
+    title: 'Spine twist (失敗例)',
     image: '/images/flexibility/5.5.spine_twist.PNG',
     description: '膝を揃えてつけながら、肩がつけばOK'
   },
@@ -45,19 +45,19 @@ export const flexibilityChecks: FlexibilityCheck[] = [
   },
   {
     id: 7,
-    title: 'ブリッジ',
+    title: 'Bridge',
     image: '/images/flexibility/7.bridge.PNG',
     description: 'ブリッジ'
   },
   {
     id: 8,
-    title: 'Ankle mobility',
+    title: 'Ankle mobility(レベル0)',
     image: '/images/flexibility/8.ankle.PNG',
     description: 'かかとをついたまましゃがめるか\nステップ1　手を前にしてOK\nステップ2　手を後ろで組む'
   },
   {
     id: 8.5,
-    title: 'Ankle mobility (別角度)',
+    title: 'Ankle mobility (レベル１)',
     image: '/images/flexibility/8.5.ankle.PNG',
     description: 'かかとをついたまましゃがめるか\nステップ1　手を前にしてOK\nステップ2　手を後ろで組む'
   }
