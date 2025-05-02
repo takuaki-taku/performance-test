@@ -21,12 +21,12 @@ export default function Home() {
   return (
     <Container className="p-0">
       {/* ① 回転地球儀 */}
-      <div className="flex min-h-screen flex-col items-center justify-between p-24">
-      {/* ↓ position-relative を追加 */}
-        <div className="relative w-full h-auto">
+      <div>
+          {/* ↓ 高さを地球儀に合わせる */}
+          <div className="relative w-full h-[50vh]"> {/* h-auto から変更 */}
           <RotatingGlobe />
-          {/* ↓ ここにテキストと矢印を追加し、absoluteで配置 */}
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-center z-10"> {/* z-10を追加して手前に表示 */}
+            {/* ↓ bottomの値を増やして上に表示 */}
+            <div className="absolute bottom-80 left-1/2 transform -translate-x-1/2 text-center z-10"> {/* bottom-4 から bottom-16 (4rem) に変更 */}
             <p className="text-black text-lg font-bold mb-2"> {/* 色を黒に変更 (背景に応じて調整) */}
               柔軟性ページにいくにはアイコンをクリック
             </p>

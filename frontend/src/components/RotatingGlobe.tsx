@@ -59,7 +59,6 @@ function Globe() {
 
 export default function RotatingGlobe() {
   return (
-    <div className="relative h-[50vh] w-full">
       <Canvas frameloop="always">
         <Suspense fallback={null}>
           <Globe />
@@ -67,7 +66,5 @@ export default function RotatingGlobe() {
           <Stars />
         </Suspense>
       </Canvas>
-      
-    </div>
   )
 } 
