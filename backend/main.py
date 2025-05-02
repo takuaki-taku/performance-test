@@ -2,7 +2,7 @@ import datetime
 from typing import Annotated, List, Optional
 from fastapi import FastAPI, Depends, HTTPException, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Date, Float
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Date, Float, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session, relationship
 from pydantic import BaseModel, Field
@@ -78,6 +78,17 @@ class AverageMaxData(Base):
     eight_shape_run_count = Column(Integer, nullable=False)
     ball_throw_cm = Column(Integer, nullable=False)
     total_score = Column(Integer)
+
+
+# 柔軟性チェック用のモデル
+class FlexibilityCheck(Base):
+    __tablename__ = "flexibility_checks"
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, nullable=False)
+    image_path = Column(String, nullable=False)
+    description = Column(String, nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
 
 # Pydanticモデルの定義
@@ -199,6 +210,24 @@ class MaxDataCreate(MaxDataBase):
 
 class MaxDataResponse(MaxDataBase):
     id: int
+
+    class Config:
+        from_attributes = True
+
+
+# 柔軟性チェック用のPydanticモデル
+class FlexibilityCheckBase(BaseModel):
+    title: str
+    image_path: str
+    description: str
+
+class FlexibilityCheckCreate(FlexibilityCheckBase):
+    pass
+
+class FlexibilityCheckRead(FlexibilityCheckBase):
+    id: int
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
 
     class Config:
         from_attributes = True
@@ -345,5 +374,42 @@ async def read_user_results(user_id: int, db: db_dependency):
         raise HTTPException(status_code=404, detail="Results not found")
     return results
 
+
+# 柔軟性チェック用のAPIエンドポイント
+@app.get("/flexibility-checks/", response_model=List[FlexibilityCheckRead])
+def read_flexibility_checks(db: Session = Depends(get_db)):
+    checks = db.query(FlexibilityCheck).all()
+    return checks
+
+@app.post("/flexibility-checks/", response_model=FlexibilityCheckRead)
+def create_flexibility_check(check: FlexibilityCheckCreate, db: Session = Depends(get_db)):
+    db_check = FlexibilityCheck(**check.model_dump())
+    db.add(db_check)
+    db.commit()
+    db.refresh(db_check)
+    return db_check
+
+@app.put("/flexibility-checks/{check_id}", response_model=FlexibilityCheckRead)
+def update_flexibility_check(check_id: int, check: FlexibilityCheckCreate, db: Session = Depends(get_db)):
+    db_check = db.query(FlexibilityCheck).filter(FlexibilityCheck.id == check_id).first()
+    if db_check is None:
+        raise HTTPException(status_code=404, detail="Flexibility check not found")
+    
+    for key, value in check.model_dump().items():
+        setattr(db_check, key, value)
+    
+    db.commit()
+    db.refresh(db_check)
+    return db_check
+
+@app.delete("/flexibility-checks/{check_id}")
+def delete_flexibility_check(check_id: int, db: Session = Depends(get_db)):
+    db_check = db.query(FlexibilityCheck).filter(FlexibilityCheck.id == check_id).first()
+    if db_check is None:
+        raise HTTPException(status_code=404, detail="Flexibility check not found")
+    
+    db.delete(db_check)
+    db.commit()
+    return {"message": "Flexibility check deleted successfully"}
 
 app.include_router(router)
