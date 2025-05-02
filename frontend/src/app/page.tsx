@@ -21,8 +21,34 @@ export default function Home() {
   return (
     <Container className="p-0">
       {/* ① 回転地球儀 */}
-      <RotatingGlobe />
-
+      <div className="flex min-h-screen flex-col items-center justify-between p-24">
+      {/* ↓ position-relative を追加 */}
+        <div className="relative w-full h-auto">
+          <RotatingGlobe />
+          {/* ↓ ここにテキストと矢印を追加し、absoluteで配置 */}
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-center z-10"> {/* z-10を追加して手前に表示 */}
+            <p className="text-black text-lg font-bold mb-2"> {/* 色を黒に変更 (背景に応じて調整) */}
+              柔軟性ページにいくにはアイコンをクリック
+            </p>
+            <div className="animate-bounce">
+              <svg
+                className="w-6 h-6 mx-auto text-black" // 色を黒に変更 (背景に応じて調整)
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
       {/* ② キャッチコピー */}
       <section className="text-center py-12 bg-gray-100">
         <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
@@ -38,6 +64,7 @@ export default function Home() {
           今すぐ始める
         </Link>
       </section>
+
     </Container>
   );
 }
