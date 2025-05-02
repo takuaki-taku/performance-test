@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from main import Base, AverageData, MaxData, User, UserResult
+from main import Base, AverageData, MaxData, User, UserResult, FlexibilityCheck
 import datetime
 
 # データベースの設定
@@ -13,68 +13,63 @@ def init_database():
     Base.metadata.create_all(bind=engine)
     
     db = SessionLocal()
-    try:
-        # 既存のデータを削除
-        db.query(UserResult).delete()
-        db.query(User).delete()
-        db.query(AverageData).delete()
-        db.query(MaxData).delete()
-        
-        # テストユーザーを作成
-        test_user = User(
-            name="テストユーザー",
-            grade="2年女子"
-        )
-        db.add(test_user)
-        db.commit()
-        
-        # テストユーザーの結果を追加
-        test_results = [
-            UserResult(
-                user_id=test_user.id,
-                date=datetime.date(2024, 1, 15),
-                long_jump_cm=180,
-                fifty_meter_run_ms=8500,
-                spider_ms=9000,
-                eight_shape_run_count=25,
-                ball_throw_cm=1500
+    try:     
+        # 柔軟性チェックの初期データを追加
+        flexibility_checks = [
+            FlexibilityCheck(
+                title='Bent forward',
+                image_path='/images/flexibility/1.bent_forword.PNG',
+                description='拳が地面につけばOK'
             ),
-            UserResult(
-                user_id=test_user.id,
-                date=datetime.date(2024, 2, 15),
-                long_jump_cm=185,
-                fifty_meter_run_ms=8300,
-                spider_ms=8800,
-                eight_shape_run_count=27,
-                ball_throw_cm=1600
+            FlexibilityCheck(
+                title='Quad stretch',
+                image_path='/images/flexibility/2.quad_stretch.PNG',
+                description='お尻と踵の隙間が拳一個分以内ならOK'
+            ),
+            FlexibilityCheck(
+                title='The split',
+                image_path='/images/flexibility/3.the_split.PNG',
+                description='肘が地面につけばOK\nおでこがつけばベリーグッド'
+            ),
+            FlexibilityCheck(
+                title='Butterfly',
+                image_path='/images/flexibility/4.butterfly.PNG',
+                description='足裏合わせて、膝と地面が拳一個分以内ならOK'
+            ),
+            FlexibilityCheck(
+                title='Spine twist',
+                image_path='/images/flexibility/5.spine_twist.PNG',
+                description='膝を揃えてつけながら、肩がつけばOK'
+            ),
+            FlexibilityCheck(
+                title='Spine twist (失敗例)',
+                image_path='/images/flexibility/5.5.spine_twist.PNG',
+                description='膝を揃えてつけながら、肩がつけばOK'
+            ),
+            FlexibilityCheck(
+                title='Shoulder flexibility',
+                image_path='/images/flexibility/6.Shoulder_flexibility.PNG',
+                description='後ろで手が組めるか両方\n※特に利き手が下の方'
+            ),
+            FlexibilityCheck(
+                title='Bridge',
+                image_path='/images/flexibility/7.bridge.PNG',
+                description='ブリッジ'
+            ),
+            FlexibilityCheck(
+                title='Ankle mobility(レベル0)',
+                image_path='/images/flexibility/8.ankle.PNG',
+                description='かかとをついたまましゃがめるか\nステップ1　手を前にしてOK\nステップ2　手を後ろで組む'
+            ),
+            FlexibilityCheck(
+                title='Ankle mobility (レベル１)',
+                image_path='/images/flexibility/8.5.ankle.PNG',
+                description='かかとをついたまましゃがめるか\nステップ1　手を前にしてOK\nステップ2　手を後ろで組む'
             )
         ]
-        for result in test_results:
-            db.add(result)
         
-        # 平均データを追加
-        average_data = AverageData(
-            grade="2年女子",
-            long_jump_cm=170,
-            fifty_meter_run_ms=9000,
-            spider_ms=9500,
-            eight_shape_run_count=20,
-            ball_throw_cm=1300,
-            total_score=None
-        )
-        db.add(average_data)
-        
-        # 最大データを追加
-        max_data = MaxData(
-            grade="2年女子",
-            long_jump_cm=200,
-            fifty_meter_run_ms=7500,
-            spider_ms=8000,
-            eight_shape_run_count=30,
-            ball_throw_cm=2000,
-            total_score=None
-        )
-        db.add(max_data)
+        for check in flexibility_checks:
+            db.add(check)
         
         # 変更をコミット
         db.commit()
