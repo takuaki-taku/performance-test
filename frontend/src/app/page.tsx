@@ -22,17 +22,16 @@ export default function Home() {
     <Container className="p-0">
       {/* ① 回転地球儀 */}
       <div>
-          {/* ↓ 高さを地球儀に合わせる */}
-          <div className="relative w-full h-[50vh]"> {/* h-auto から変更 */}
-          <RotatingGlobe />
-            {/* ↓ bottomの値を増やして上に表示 */}
-            <div className="absolute bottom-80 left-1/2 transform -translate-x-1/2 text-center z-10"> {/* bottom-4 から bottom-16 (4rem) に変更 */}
-            <p className="text-black text-lg font-bold mb-2"> {/* 色を黒に変更 (背景に応じて調整) */}
+        {/* ↓ 高さを地球儀に合わせる */}
+        <div className="w-full h-[30vh] flex flex-col items-center justify-start relative">
+          {/* テキストと矢印 */}
+          <div className="text-center w-full pt-4">
+            <p className="text-sm md:text-lg font-bold mb-2">
               柔軟性ページにいくにはアイコンをクリック
             </p>
             <div className="animate-bounce">
               <svg
-                className="w-6 h-6 mx-auto text-black" // 色を黒に変更 (背景に応じて調整)
+                className="w-6 h-6 mx-auto text-black"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -47,6 +46,8 @@ export default function Home() {
               </svg>
             </div>
           </div>
+          {/* 地球儀（canvas） */}
+          <RotatingGlobe />
         </div>
       </div>
       {/* ② キャッチコピー */}
