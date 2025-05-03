@@ -23,7 +23,7 @@ export default function Home() {
       {/* ① 回転地球儀 */}
       <div>
         {/* ↓ 高さを地球儀に合わせる */}
-        <div className="w-full h-[30vh] flex flex-col items-center justify-start relative">
+        <div className="w-full h-[40vh] flex flex-col items-center justify-start relative">
           {/* テキストと矢印 */}
           <div className="text-center w-full pt-4">
             <p className="text-sm md:text-lg font-bold mb-2">
