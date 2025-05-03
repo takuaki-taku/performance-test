@@ -10,7 +10,8 @@ export const useFlexibilityChecks = () => {
   useEffect(() => {
     const fetchChecks = async () => {
       try {
-        const response = await axios.get<FlexibilityCheck[]>('http://localhost:8000/flexibility-checks/');
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+        const response = await axios.get<FlexibilityCheck[]>(`${apiBase}/flexibility-checks/`);
         setChecks(response.data);
         setLoading(false);
       } catch (err) {
