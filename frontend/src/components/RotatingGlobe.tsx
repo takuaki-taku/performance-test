@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation'
 function Globe() {
   const ref = useRef<Mesh>(null!)
   const router = useRouter()
-  const texture = useLoader(TextureLoader, '/images/toppagephoto.jpg')
+  const texture = useLoader(TextureLoader, '/images/toppagephoto.png')
 
   // NPOTテクスチャ対応: mipmaps無効化とラッピング設定
   useEffect(() => {
@@ -47,11 +47,13 @@ function Globe() {
       onPointerOver={() => (document.body.style.cursor = 'pointer')}
       onPointerOut={() => (document.body.style.cursor = 'auto')}
     >
-      <planeGeometry args={planeArgs} />
+      <planeGeometry args={planeArgs} /> {/* ← これを追加！ */}
       <meshBasicMaterial
         map={texture}
         side={DoubleSide}
         toneMapped={false}
+        transparent={true}
+        opacity={1}
       />
     </mesh>
   )
@@ -59,12 +61,16 @@ function Globe() {
 
 export default function RotatingGlobe() {
   return (
-      <Canvas frameloop="always">
-        <Suspense fallback={null}>
-          <Globe />
-          <OrbitControls enableZoom={false} enablePan={false} />
-          <Stars />
-        </Suspense>
-      </Canvas>
+    <Canvas
+      frameloop="always"
+      gl={{ alpha: true }}
+      style={{ background: 'transparent' }}
+    >
+      <Suspense fallback={null}>
+        <Globe />
+        <OrbitControls enableZoom={false} enablePan={false} />
+        <Stars />
+      </Suspense>
+    </Canvas>
   )
-} 
+}

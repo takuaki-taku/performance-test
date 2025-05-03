@@ -23,7 +23,12 @@ export default function FlexibilityPage() {
         <a
           href="/pdfs/flexibility_check.pdf"
           download
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+          className="
+            bg-blue-500 hover:bg-blue-600 text-white
+            px-3 py-1.5 text-sm
+            md:px-4 md:py-2 md:text-base
+            rounded-lg flex items-center gap-2
+          "
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -37,17 +42,17 @@ export default function FlexibilityPage() {
               clipRule="evenodd"
             />
           </svg>
-          PDFをダウンロード
+          PDF
         </a>
       </div>
       <div className="mb-8">
         <p className="text-gray-700 mb-4">
           このチェック項目は、身体の柔軟性を評価するための基本的なテストです。テニス選手が怪我予防のために最低限クリアして欲しいラインになります。
         </p>
-        <p className="text-gray-700 mb-4">
+        <p className="hidden md:block text-gray-700 mb-4">
           以下の項目を順番にチェックし、自分の柔軟性の状態を確認しましょう。各項目には具体的な判定基準が示されています。
         </p>
-        <p className="text-gray-700">
+        <p className="hidden md:block text-gray-700">
           定期的にチェックを行うことで、柔軟性の変化を追跡し、トレーニングの効果を確認することができます。
         </p>
       </div>
