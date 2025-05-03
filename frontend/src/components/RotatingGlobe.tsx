@@ -26,7 +26,7 @@ function Globe() {
   const planeArgs = useMemo<[number, number]>(() => {
     const img = texture.image as HTMLImageElement
     const aspect = img.width / img.height
-    const height = 2
+    const height = 5
     const width = aspect * height
     // タプル型としてキャスト
     return [width, height] as [number, number]
