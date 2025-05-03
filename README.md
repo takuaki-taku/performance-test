@@ -84,19 +84,69 @@ This application is designed to manage and display physical test results for use
 
     The frontend will be accessible at `http://localhost:3000`.
 
-## API Endpoints
+## APIエンドポイント一覧
 
-*   **Users:**
-    *   `GET /users/`: Get all users.
-    *   `GET /users/{user_id}`: Get a specific user by ID.
-    *   `POST /users/`: Create a new user.
-    *   `PUT /users/{user_id}`: Update an existing user.
-    *   `DELETE /users/{user_id}`: Delete a user.
-*   **Results:**
-    *   `POST /user_results/`: Create a new result for a user.
-    *   `DELETE /user_results/{result_id}`: Delete a result.
-*   **Average/Max Data:**
-    *   `GET /average_max_data/grade/{grade}`: Get average/max data for a specific grade.
+### ユーザー関連
+
+- `POST   /users/`  
+  ユーザーを新規作成
+
+- `GET    /users/{user_id}`  
+  指定したユーザー情報を取得
+
+- `GET    /users/`  
+  ユーザー一覧を取得
+
+---
+
+### 結果（リザルト）関連
+
+- `POST   /user_results/`  
+  結果（リザルト）を新規作成
+
+- `GET    /user_results/{user_id}`  
+  指定ユーザーの結果一覧を取得
+
+- `DELETE /user_results/{result_id}`  
+  結果（リザルト）を削除
+
+---
+
+### 平均・最大データ関連
+
+- `POST   /average_max_data/`  
+  平均・最大データを新規作成
+
+- `GET    /average_max_data/grade/{grade}`  
+  指定学年の平均・最大データ一覧を取得
+
+- `POST   /average_data/`  
+  平均データを新規作成
+
+- `GET    /average_data/grade/{grade}`  
+  指定学年の平均データを取得
+
+- `POST   /max_data/`  
+  最大データを新規作成
+
+- `GET    /max_data/grade/{grade}`  
+  指定学年の最大データを取得
+
+---
+
+### 柔軟性チェック関連
+
+- `GET    /flexibility-checks/`  
+  柔軟性チェック一覧を取得
+
+- `POST   /flexibility-checks/`  
+  柔軟性チェックを新規作成
+
+- `PUT    /flexibility-checks/{check_id}`  
+  柔軟性チェックを更新
+
+- `DELETE /flexibility-checks/{check_id}`  
+  柔軟性チェックを削除
 
 ## Database Setup
 
