@@ -4,6 +4,14 @@
 
 This application is designed to manage and display physical test results for users. It consists of a backend built with FastAPI and a frontend built with React.
 
+## Design
+
+デザイン案は以下のリンクで確認できます：
+
+- [デザイン案](https://www.icloud.com/freeform/08bQvo9EUQ-52dXZEYT0AoHvw#Untitled_17)
+
+> **注意**: このリンクは iOS 16.2+、iPadOS 16.2+、macOS Ventura 13.1+、または visionOS 1.0+ が必要です。
+
 ## Features
 
 *   **User Management:**
