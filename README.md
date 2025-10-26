@@ -29,7 +29,29 @@ This application is designed to manage and display physical test results for use
     *   Axios
     *   React Bootstrap
 
+## Quick Start with Dev Container (Recommended)
+
+開発環境を簡単にセットアップするには、Dev Container を使用することをお勧めします：
+
+1. **Docker Desktop と VS Code の Dev Containers 拡張機能をインストール**
+2. **プロジェクトを開く**
+   ```bash
+   git clone https://github.com/takuaki-taku/performance-test.git
+   cd performance-test
+   code .
+   ```
+3. **Dev Container を開く**
+   - `Cmd+Shift+P` (Mac) または `Ctrl+Shift+P` (Windows/Linux)
+   - 「Dev Containers: Reopen in Container」を選択
+   - 初回はビルドに時間がかかります（5-10分）
+
+詳細は [`.devcontainer/README.md`](.devcontainer/README.md) を参照してください。
+
 ## Setup Instructions
+
+### Manual Setup
+
+以下は Dev Container を使わない場合の手順です。
 
 ### Backend
 

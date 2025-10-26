@@ -11,11 +11,24 @@
         "version": "18"
       }
     },
-    "postCreateCommand": "pip install -r ./backend/requirements.txt && cd ./frontend2 && npm install && cd ..",
+    "postCreateCommand": "pip install -r ./backend/requirements.txt && cd ./frontend && npm install && cd ..",
+    "forwardPorts": [3000, 8000],
     "portsAttributes": {
       "3000": {
-        "label": "Application",
+        "label": "Frontend",
         "onAutoForward": "openBrowser"
+      },
+      "8000": {
+        "label": "Backend API"
+      }
+    },
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "ms-python.python",
+          "dbaeumer.vscode-eslint",
+          "esbenp.prettier-vscode"
+        ]
       }
     }
   }

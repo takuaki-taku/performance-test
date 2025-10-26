@@ -1,8 +1,11 @@
-FROM python:3.9-slim-buster
+FROM ubuntu:22.04
 
-# Node.jsとnpmをインストール
-RUN apt-get update && apt-get install -y curl gnupg
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
-RUN apt-get install -y nodejs
+# 必要なツールをインストール
+RUN apt-get update && apt-get install -y \
+    curl \
+    gnupg \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
-# 必要に応じて他のツールやライブラリをインストール
+# タイムゾーン設定（対話式プロンプトを回避）
+ENV DEBIAN_FRONTEND=noninteractive
