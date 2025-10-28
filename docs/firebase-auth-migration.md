@@ -140,4 +140,62 @@ FIREBASE_CREDENTIAL_JSON={...サービスアカウントJSON...}
 - [ ] フロントのナビ/ルーティングをロールで出し分け。
 - [ ] ダミー認証撤去、README 更新。
 
+---
+
+## アーキテクチャ図（Mermaid）
+
+### 構成関係（コンポーネント）
+```mermaid
+flowchart LR
+  subgraph Client[Frontend (Next.js)]
+    UI[UI/Pages]
+    SDK[Firebase Web SDK]
+  end
+
+  subgraph Firebase[Firebase]
+    Auth[Authentication]
+    // Firestore/Storage は今回は未使用前提
+  end
+
+  subgraph Backend[Backend (FastAPI)]
+    AdminSDK[Firebase Admin SDK]
+    API[Protected API]
+  end
+
+  subgraph DB[(SQLite)]
+    UsersTable[users\n(id, name, grade, firebase_uid, ...)]
+    ResultsTable[user_results, ...]
+  end
+
+  UI --> SDK
+  SDK -- Login/Signup --> Auth
+  SDK -- getIdToken() --> UI
+  UI -- Authorization: Bearer ID Token --> API
+  API -- verify_id_token --> AdminSDK
+  AdminSDK -- validate --> Auth
+  API -- R/W --> DB
+  API -- link by firebase_uid --> UsersTable
+```
+
+### 主要フロー（ログイン→API呼び出し）
+```mermaid
+sequenceDiagram
+  participant FE as Frontend (Next.js)
+  participant FAuth as Firebase Auth
+  participant BE as Backend (FastAPI)
+  participant Adm as Firebase Admin SDK
+  participant DB as SQLite
+
+  FE->>FAuth: signInWithEmailAndPassword()
+  FAuth-->>FE: ID Token (JWT)
+  FE->>BE: API Request (Authorization: Bearer <ID Token>)
+  BE->>Adm: verify_id_token(token)
+  Adm->>FAuth: validate signature & claims
+  FAuth-->>Adm: valid(uid, claims)
+  Adm-->>BE: decoded_token (uid, role)
+  BE->>DB: R/W using firebase_uid
+  DB-->>BE: rows
+  BE-->>FE: Response (data)
+```
+
 
