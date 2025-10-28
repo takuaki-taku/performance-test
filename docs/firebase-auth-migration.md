@@ -147,34 +147,34 @@ FIREBASE_CREDENTIAL_JSON={...サービスアカウントJSON...}
 ### 構成関係（コンポーネント）
 ```mermaid
 flowchart LR
-  subgraph Client[Frontend (Next.js)]
-    UI[UI/Pages]
-    SDK[Firebase Web SDK]
+  subgraph Client["Frontend (Next.js)"]
+    UI["UI / Pages"]
+    SDK["Firebase Web SDK"]
   end
 
-  subgraph Firebase[Firebase]
-    Auth[Authentication]
-    // Firestore/Storage は今回は未使用前提
+  subgraph Firebase["Firebase"]
+    Auth["Authentication"]
+    %% Firestore/Storage は今回は未使用前提
   end
 
-  subgraph Backend[Backend (FastAPI)]
-    AdminSDK[Firebase Admin SDK]
-    API[Protected API]
+  subgraph Backend["Backend (FastAPI)"]
+    AdminSDK["Firebase Admin SDK"]
+    API["Protected API"]
   end
 
-  subgraph DB[(SQLite)]
-    UsersTable[users\n(id, name, grade, firebase_uid, ...)]
-    ResultsTable[user_results, ...]
+  subgraph Database["SQLite"]
+    UsersTable["users (id, name, grade, firebase_uid, ...)"]
+    ResultsTable["user_results, ..."]
   end
 
   UI --> SDK
-  SDK -- Login/Signup --> Auth
-  SDK -- getIdToken() --> UI
-  UI -- Authorization: Bearer ID Token --> API
-  API -- verify_id_token --> AdminSDK
-  AdminSDK -- validate --> Auth
-  API -- R/W --> DB
-  API -- link by firebase_uid --> UsersTable
+  SDK -->|Login Signup| Auth
+  SDK -->|getIdToken| UI
+  UI -->|Authorization Bearer ID Token| API
+  API -->|verify_id_token| AdminSDK
+  AdminSDK -->|validate| Auth
+  API -->|R/W| UsersTable
+  API -->|R/W| ResultsTable
 ```
 
 ### 主要フロー（ログイン→API呼び出し）
