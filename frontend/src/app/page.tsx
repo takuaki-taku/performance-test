@@ -1,9 +1,10 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment, @typescript-eslint/no-unused-vars */
-'use client';
+ 'use client';
 
 import dynamic from 'next/dynamic';
 import Container from '@/components/Container';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
 
 // サーバーサイドは無視してクライアントのみでロード
 const RotatingGlobe = dynamic(
@@ -12,58 +13,86 @@ const RotatingGlobe = dynamic(
 );
 
 export default function Home() {
-  const slides = [
-    { img: '/images/hero1.jpg', caption: '科学的トレーニング' },
-    { img: '/images/hero2.jpg', caption: '柔軟性チェック' },
-    { img: '/images/hero3.jpg', caption: 'リアルタイム分析' },
-  ];
+  const router = useRouter();
+  const isAuthenticated = useAuth();
 
+  const handleMyPageClick = () => {
+    if (isAuthenticated) {
+      router.push('/mypage');
+    } else if (isAuthenticated === false) {
+      router.push('/login');
+    } // isAuthenticated === null の間は無操作
+  };
   return (
     <Container className="p-0">
-      {/* ① 回転地球儀 */}
-      <div>
-        {/* ↓ 高さを地球儀に合わせる */}
-        <div className="w-full h-[40vh] flex flex-col items-center justify-start relative">
-          {/* テキストと矢印 */}
-          <div className="text-center w-full pt-4">
-            <p className="text-sm md:text-lg font-bold mb-2">
-              柔軟性ページにいくにはアイコンをクリック
-            </p>
-            <div className="animate-bounce">
-              <svg
-                className="w-6 h-6 mx-auto text-black"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                />
-              </svg>
+      {/* ① ヒーロー：左テキスト／右ビジュアル（回転画像は控えめ） */}
+      <section className="py-10 md:py-14 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            {/* 左：コピーとCTA（英語＋アイコン） */}
+            <div>
+              <h1 className="text-3xl md:text-5xl font-extrabold mb-4 leading-tight">
+                Performance Training Database
+              </h1>
+              <p className="text-base md:text-lg text-gray-700 mb-6">
+                Measure, analyze, and improve — all in one.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={handleMyPageClick}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full
+                             text-white bg-gradient-to-r from-blue-600 to-indigo-600
+                             hover:from-blue-700 hover:to-indigo-700
+                             shadow-lg hover:shadow-xl transition-all group"
+                  aria-label="Go to My Page"
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg>
+                  <span>My Page</span>
+                  <span className="ml-1 transition-transform group-hover:translate-x-1">→</span>
+                </button>
+                <Link
+                  href="/flexibility"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-200 text-gray-900 rounded-full hover:bg-gray-300 transition text-center"
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20c2-4 5-6 8-6s6 2 8 6"/><circle cx="12" cy="7" r="3"/></svg>
+                  <span>See Stretch</span>
+                </Link>
+              </div>
+            </div>
+            {/* 右：回転画像（主張を小さく／md以上で表示） */}
+            <div className="hidden md:block">
+              <div className="w-full max-w-md ml-auto">
+                <div className="w-full h-[300px]">{/* 高さを抑える */}
+                  <RotatingGlobe />
+                </div>
+              </div>
             </div>
           </div>
-          {/* 地球儀（canvas） */}
-          <RotatingGlobe />
         </div>
-      </div>
-      {/* ② キャッチコピー */}
-      <section className="text-center py-12 bg-gray-100">
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
-          Elevate Your Performance
-        </h1>
-        <p className="text-lg text-gray-700 mb-8">
-          データ駆動型トレーニングで、新しい自分に出会う。
-        </p>
-        <Link
-          href="/test-results"
-          className="inline-block px-8 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition"
-        >
-          今すぐ始める
-        </Link>
+      </section>
+
+      {/* ② クリックできるカード：Stretch 導線（英語＋アイコン） */}
+      <section className="py-10">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Link
+              href="/flexibility"
+              className="group block rounded-xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition"
+              aria-label="Stretch 機能へ移動"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <svg className="w-6 h-6 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20c2-4 5-6 8-6s6 2 8 6"/><circle cx="12" cy="7" r="3"/></svg>
+                  <h3 className="text-xl font-bold">Stretch</h3>
+                </div>
+                <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-blue-50 text-blue-600 group-hover:bg-blue-100">→</span>
+              </div>
+              <p className="mt-3 text-sm text-gray-600">
+                Check the sample and steps for flexibility measurement. Start now.
+              </p>
+            </Link>
+          </div>
+        </div>
       </section>
 
     </Container>
