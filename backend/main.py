@@ -1,8 +1,12 @@
+from fastapi import Request
+import json
+import base64
+import os
 import datetime
 from typing import Annotated, List, Optional
 from fastapi import FastAPI, Depends, HTTPException, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Date, Float, DateTime
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Date, Float, DateTime, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session, relationship
 from pydantic import BaseModel, Field
@@ -26,6 +30,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
     grade = Column(String)
+    firebase_uid = Column(String, unique=True, index=True, nullable=True)
     results = relationship("UserResult", back_populates="user")
 
 
@@ -237,8 +242,22 @@ class FlexibilityCheckRead(FlexibilityCheckBase):
         from_attributes = True
 
 
-# データベースの作成
-Base.metadata.create_all(bind=engine)
+def ensure_schema():
+    Base.metadata.create_all(bind=engine)
+    # SQLite 簡易マイグレーション: users に firebase_uid カラムが無ければ追加
+    with engine.connect() as conn:
+        res = conn.execute(text("PRAGMA table_info(users)"))
+        cols = [row[1] for row in res.fetchall()]
+        if "firebase_uid" not in cols:
+            conn.execute(
+                text("ALTER TABLE users ADD COLUMN firebase_uid TEXT"))
+            # 可能ならユニーク索引を追加（SQLite は後付け UNIQUE 制約はCREATE INDEXで代替）
+            conn.execute(text(
+                "CREATE UNIQUE INDEX IF NOT EXISTS idx_users_firebase_uid ON users(firebase_uid)"))
+            conn.commit()
+
+
+ensure_schema()
 
 # FastAPIアプリケーションの作成
 app = FastAPI()
@@ -269,6 +288,52 @@ def get_db():
 
 
 db_dependency = Annotated[Session, Depends(get_db)]
+# Firebase IDトークン検証（開発では検証スキップ可）
+
+
+def _decode_jwt_no_verify(token: str) -> dict:
+    try:
+        parts = token.split(".")
+        if len(parts) != 3:
+            return {}
+        payload_b64 = parts[1] + "==="
+        payload = base64.urlsafe_b64decode(
+            payload_b64[: len(payload_b64) - (len(payload_b64) % 4)])
+        return json.loads(payload)
+    except Exception:
+        return {}
+
+
+async def get_current_firebase_uid(request: Request) -> Optional[str]:
+    authz = request.headers.get(
+        "authorization") or request.headers.get("Authorization")
+    if not authz or not authz.lower().startswith("bearer "):
+        return None
+    token = authz.split(" ", 1)[1]
+    verify = os.getenv("FIREBASE_VERIFY", "false").lower() == "true"
+    if not verify:
+        payload = _decode_jwt_no_verify(token)
+        return payload.get("sub")
+    # ここに本番用の verify 実装を追加（firebase-admin 等）。現状は未設定ならNone。
+    return None
+
+
+@app.get("/me", response_model=UserRead)
+async def get_me(request: Request, db: db_dependency):
+    uid = await get_current_firebase_uid(request)
+    if not uid:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    user = db.query(User).filter(User.firebase_uid == uid).first()
+    if user is None:
+        # 初回アクセス時に最低限のユーザーを作成
+        user = User(name="User", grade="",)
+        user.firebase_uid = uid
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    if not user.results:
+        user.results = []
+    return user
 
 
 # APIエンドポイント

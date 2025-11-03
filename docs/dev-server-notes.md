@@ -95,4 +95,17 @@ curl -sS -D - http://127.0.0.1:3000/mypage -o /dev/null
 curl -sS -D - http://127.0.0.1:8000/openapi.json -o /dev/null
 ```
 
+---
+
+## TODO（認証まわり・本番向け強化）
+
+- [ ] firebase-admin を導入し、サーバーで ID トークンを厳密検証（署名/iss/aud/exp）
+  - 依存追加: `firebase-admin`
+  - サービスアカウント鍵の安全な配置と環境変数（`GOOGLE_APPLICATION_CREDENTIALS`）設定
+  - `FIREBASE_VERIFY=true` 時は `verify_id_token()` を使用、`false` は開発用スキップ
+- [ ] `/me` 以外の個人データAPIにも認証・認可チェックを適用
+  - 原則: `path_user_id == me.user.id` を満たす場合のみ許可
+- [ ] `/mypage` 初期化時に `/me` を呼び、取得した `userId` をローカル保存して既存APIに連携
+- [ ] README/運用メモ更新（環境変数、鍵配置、起動手順の本番/開発切替）
+
 
