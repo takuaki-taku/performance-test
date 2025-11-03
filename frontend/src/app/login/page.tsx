@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Container from '@/components/Container';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, getIdToken } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import Link from 'next/link';
+import api from '@/lib/api';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -18,14 +19,20 @@ export default function LoginPage() {
       const cred = await signInWithEmailAndPassword(auth, email, password);
       if (cred.user) {
         try {
-          const raw = localStorage.getItem('userId');
-          const id = raw ? Number(raw) : NaN;
-          if (!Number.isNaN(id)) {
+          const token = await getIdToken(cred.user);
+          // /me で userId を解決
+          const res = await api.get('/me', {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const id = res?.data?.id;
+          if (typeof id === 'number') {
+            try { localStorage.setItem('userId', String(id)); } catch {}
             router.push(`/mypage/${id}`);
           } else {
             router.push('/');
           }
-        } catch {
+        } catch (e) {
+          console.error('Failed to resolve user via /me:', e);
           router.push('/');
         }
       }

@@ -4,8 +4,9 @@ import { useState } from 'react';
 import Container from '@/components/Container';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile, getIdToken } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import api from '@/lib/api';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
@@ -20,15 +21,32 @@ export default function SignupPage() {
       if (cred.user && displayName) {
         await updateProfile(cred.user, { displayName });
       }
+      // サインアップ直後に /me を呼び、users テーブルに作成（なければ作成）し id を取得
       try {
-        const raw = localStorage.getItem('userId');
-        const id = raw ? Number(raw) : NaN;
-        if (!Number.isNaN(id)) {
+        const token = await getIdToken(cred.user!);
+        const res = await api.get('/me', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const id = res?.data?.id;
+        if (typeof id === 'number') {
+          // displayName を users.name に反映（grade は空文字運用）
+          if (displayName) {
+            try {
+              await api.put(`/users/${id}`, { name: displayName, grade: '' }, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              try { localStorage.setItem('userName', displayName); } catch {}
+            } catch (e) {
+              console.warn('Failed to update user name:', e);
+            }
+          }
+          try { localStorage.setItem('userId', String(id)); } catch {}
           router.push(`/mypage/${id}`);
         } else {
           router.push('/');
         }
-      } catch {
+      } catch (e) {
+        console.error('Failed to setup user via /me:', e);
         router.push('/');
       }
     } catch (err) {
