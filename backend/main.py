@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 router = APIRouter()
 
 # データベースの設定
-DATABASE_URL = "sqlite:///./test.db"
+DATABASE_URL = "sqlite:///./backend/test.db"
 engine = create_engine(
     DATABASE_URL, connect_args={"check_same_thread": False}
 )
@@ -33,7 +33,8 @@ class UserResult(Base):
     __tablename__ = "user_results"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"),
+                     index=True, nullable=False)
     date = Column(Date, nullable=False)
     long_jump_cm = Column(Integer, nullable=False)
     fifty_meter_run_ms = Column(Integer, nullable=False)
@@ -88,7 +89,8 @@ class FlexibilityCheck(Base):
     image_path = Column(String, nullable=False)
     description = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow,
+                        onupdate=datetime.datetime.utcnow)
 
 
 # Pydanticモデルの定義
@@ -221,8 +223,10 @@ class FlexibilityCheckBase(BaseModel):
     image_path: str
     description: str
 
+
 class FlexibilityCheckCreate(FlexibilityCheckBase):
     pass
+
 
 class FlexibilityCheckRead(FlexibilityCheckBase):
     id: int
@@ -344,7 +348,8 @@ def create_average_data(average_data: AverageDataCreate, db: Session = Depends(g
 
 @app.get("/average_data/grade/{grade}", response_model=AverageDataResponse)
 def read_average_data_by_grade(grade: str, db: Session = Depends(get_db)):
-    db_average_data = db.query(AverageData).filter(AverageData.grade == grade).first()
+    db_average_data = db.query(AverageData).filter(
+        AverageData.grade == grade).first()
     if db_average_data is None:
         raise HTTPException(status_code=404, detail="Average data not found")
     return db_average_data
@@ -394,27 +399,34 @@ def create_flexibility_check(check: FlexibilityCheckCreate, db: Session = Depend
     db.refresh(db_check)
     return db_check
 
+
 @app.put("/flexibility-checks/{check_id}", response_model=FlexibilityCheckRead)
 def update_flexibility_check(check_id: int, check: FlexibilityCheckCreate, db: Session = Depends(get_db)):
-    db_check = db.query(FlexibilityCheck).filter(FlexibilityCheck.id == check_id).first()
+    db_check = db.query(FlexibilityCheck).filter(
+        FlexibilityCheck.id == check_id).first()
     if db_check is None:
-        raise HTTPException(status_code=404, detail="Flexibility check not found")
-    
+        raise HTTPException(
+            status_code=404, detail="Flexibility check not found")
+
     for key, value in check.model_dump().items():
         setattr(db_check, key, value)
-    
+
     db.commit()
     db.refresh(db_check)
     return db_check
 
+
 @app.delete("/flexibility-checks/{check_id}")
 def delete_flexibility_check(check_id: int, db: Session = Depends(get_db)):
-    db_check = db.query(FlexibilityCheck).filter(FlexibilityCheck.id == check_id).first()
+    db_check = db.query(FlexibilityCheck).filter(
+        FlexibilityCheck.id == check_id).first()
     if db_check is None:
-        raise HTTPException(status_code=404, detail="Flexibility check not found")
-    
+        raise HTTPException(
+            status_code=404, detail="Flexibility check not found")
+
     db.delete(db_check)
     db.commit()
     return {"message": "Flexibility check deleted successfully"}
+
 
 app.include_router(router)
