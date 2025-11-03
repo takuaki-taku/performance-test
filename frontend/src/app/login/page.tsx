@@ -17,7 +17,17 @@ export default function LoginPage() {
     try {
       const cred = await signInWithEmailAndPassword(auth, email, password);
       if (cred.user) {
-        router.push('/mypage');
+        try {
+          const raw = localStorage.getItem('userId');
+          const id = raw ? Number(raw) : NaN;
+          if (!Number.isNaN(id)) {
+            router.push(`/mypage/${id}`);
+          } else {
+            router.push('/');
+          }
+        } catch {
+          router.push('/');
+        }
       }
     } catch (error) {
       console.error('Login failed:', error);

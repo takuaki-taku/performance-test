@@ -3,7 +3,6 @@
 import Container from '@/components/Container';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import Link from 'next/link';
 import { mockInProgressTrainings, mockRecentTrainings, seedMyPageMocksToLocalStorage } from './mock';
@@ -30,13 +29,16 @@ type InProgressTraining = {
 type RecentTraining = {
   id: string | number;
   title: string;
-  href: string; // e.g. "/flexibility" or detail page
-  accessedAt?: string; // ISO string
+  href: string;
+  accessedAt?: string;
 };
 
-export default function MyPage() {
+interface MyPageContentProps {
+  userId: number;
+}
+
+export default function MyPageContent({ userId }: MyPageContentProps) {
   const isAuthenticated = useAuth();
-  const router = useRouter();
   const [userName, setUserName] = useState<string>('User');
   const [completedCount, setCompletedCount] = useState<number>(0);
   const [inProgressCount, setInProgressCount] = useState<number>(0);
@@ -49,22 +51,15 @@ export default function MyPage() {
     []
   );
 
-  useEffect(() => {
-    if (isAuthenticated === false) {
-      router.push('/login');
-    }
-  }, [isAuthenticated, router]);
-
-  // 名前と統計の簡易取得（localStorageに userId / userName があれば利用）
+  // 初期の表示用データ（モック）とローカルの名前
   useEffect(() => {
     const storedName = localStorage.getItem('userName');
-    const storedUserId = localStorage.getItem('userId');
     const storedInProgress = localStorage.getItem('inProgressTrainings');
     const storedRecent = localStorage.getItem('recentTrainings');
     if (storedName) {
       setUserName(storedName);
     }
-    // モック投入と表示（userId が無くても動くように先に処理）
+
     try {
       if (storedInProgress) {
         const parsed: InProgressTraining[] = JSON.parse(storedInProgress);
@@ -101,29 +96,26 @@ export default function MyPage() {
     } catch {
       setRecentTrainings(mockRecentTrainings.slice(0, 3));
     }
+  }, []);
 
-    // userId がある場合のみ、完了件数と名前をAPIから取得
-    if (storedUserId) {
-      const userId = Number(storedUserId);
-      axios
-        .get(`${apiBase}/users/${userId}`)
-        .then((res) => {
-          if (res?.data?.name) setUserName(res.data.name);
-        })
-        .catch(() => {/* noop */});
-      axios
-        .get<UserResult[]>(`${apiBase}/user_results/${userId}`)
-        .then((res) => {
-          setCompletedCount(res.data.length || 0);
-        })
-        .catch(() => {
-          setCompletedCount(0);
-        });
-    } else {
-      // 未ログイン時は仮の0件
-      setCompletedCount(0);
-    }
-  }, [apiBase]);
+  // API からユーザー名と完了件数を取得
+  useEffect(() => {
+    if (!userId) return;
+    axios
+      .get(`${apiBase}/users/${userId}`)
+      .then((res) => {
+        if (res?.data?.name) setUserName(res.data.name);
+      })
+      .catch(() => {/* noop */});
+    axios
+      .get<UserResult[]>(`${apiBase}/user_results/${userId}`)
+      .then((res) => {
+        setCompletedCount(res.data.length || 0);
+      })
+      .catch(() => {
+        setCompletedCount(0);
+      });
+  }, [apiBase, userId]);
 
   if (isAuthenticated === null) {
     return (
@@ -132,7 +124,7 @@ export default function MyPage() {
   }
 
   if (!isAuthenticated) {
-    return null; // redirecting
+    return null; // redirecting is handled by higher-level page
   }
 
   return (
@@ -241,7 +233,32 @@ export default function MyPage() {
             </ul>
           )}
         </section>
+
+        {/* その他の情報 */}
+        <section className="mt-10">
+          <h2 className="text-xl font-bold mb-4">その他の情報</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {completedCount > 0 && (
+              <Link
+                href={`/physical-test-results/${userId}`}
+                className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100 hover:shadow-md transition block"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-blue-50 text-blue-600">
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="7" width="3" height="11"/><rect x="17" y="10" width="3" height="8"/></svg>
+                  </span>
+                  <div>
+                    <p className="font-semibold text-gray-900">パフォーマンステストの結果</p>
+                    <p className="text-sm text-gray-600 mt-1">直近 {completedCount} 件の記録を表示</p>
+                  </div>
+                </div>
+              </Link>
+            )}
+          </div>
+        </section>
       </div>
     </Container>
   );
 }
+
+

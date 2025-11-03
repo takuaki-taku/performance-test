@@ -18,10 +18,21 @@ export default function Home() {
 
   const handleMyPageClick = () => {
     if (isAuthenticated) {
-      router.push('/mypage');
+      try {
+        const raw = localStorage.getItem('userId');
+        const id = raw ? Number(raw) : NaN;
+        if (!Number.isNaN(id)) {
+          router.push(`/mypage/${id}`);
+        } else {
+          router.push('/login');
+        }
+      } catch {
+        router.push('/login');
+      }
     } else if (isAuthenticated === false) {
       router.push('/login');
-    } // isAuthenticated === null の間は無操作
+    }
+    // isAuthenticated === null の間は無操作
   };
   return (
     <Container className="p-0">
