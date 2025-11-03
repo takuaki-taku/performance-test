@@ -30,12 +30,14 @@ const Header = () => {
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12l9-9 9 9"/><path d="M9 21V9h6v12"/></svg>
               <span>Home</span>
             </Link>
-            <Link href="/test-results" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="7" width="3" height="11"/><rect x="17" y="10" width="3" height="8"/></svg>
-              <span>Results</span>
+            <Link href="/mypage" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span>MyPage</span>
             </Link>
             <Link href="/flexibility" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20c2-4 5-6 8-6s6 2 8 6"/><circle cx="12" cy="7" r="3"/></svg>
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
               <span>Stretch</span>
             </Link>
             <Link href="/about" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
@@ -86,16 +88,19 @@ const Header = () => {
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12l9-9 9 9"/><path d="M9 21V9h6v12"/></svg>
                 <span>Home</span>
               </Link>
-              <Link href="/karte" className="text-gray-600 hover:text-gray-900">
-                Karte
-              </Link>
-              <Link href="/test-results" className="text-gray-600 hover:text-gray-900">
-                Test Results
-              </Link>
-              <Link href="/flexibility" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20c2-4 5-6 8-6s6 2 8 6"/><circle cx="12" cy="7" r="3"/></svg>
-                <span>Stretch</span>
-              </Link>
+                <Link href="/mypage" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <span>MyPage</span>
+                </Link>
+                <Link href="/karte" className="text-gray-600 hover:text-gray-900">
+                  Karte
+                </Link>
+                <Link href="/flexibility" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                  </svg>
+                  <span>Stretch</span>
+                </Link>
               <Link href="/about" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
                 <span>About</span>
