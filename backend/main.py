@@ -158,6 +158,11 @@ class UserRead(BaseModel):
         orm_mode = True
 
 
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    grade: Optional[str] = None
+
+
 class AverageMaxDataBase(BaseModel):
     grade: str
     long_jump: float
@@ -318,7 +323,13 @@ async def get_current_firebase_uid(request: Request) -> Optional[str]:
     return None
 
 
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
+
 @app.get("/me", response_model=UserRead)
+@router.get("/me", response_model=UserRead)
 async def get_me(request: Request, db: db_dependency):
     uid = await get_current_firebase_uid(request)
     if not uid:
@@ -344,6 +355,21 @@ async def create_user(user: UserCreate, db: db_dependency):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+@app.put("/users/{user_id}", response_model=UserRead)
+async def update_user(user_id: int, payload: UserUpdate, db: db_dependency):
+    user = db.query(User).filter(User.id == user_id).first()
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    data = payload.dict(exclude_unset=True)
+    for k, v in data.items():
+        setattr(user, k, v)
+    db.commit()
+    db.refresh(user)
+    if not user.results:
+        user.results = []
+    return user
 
 
 @app.get("/users/{user_id}", response_model=UserRead)
