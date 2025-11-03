@@ -60,6 +60,9 @@ function TestResultsContent() {
   }, [userId])
 
   const handleUserSelect = (userId: number) => {
+    try {
+      localStorage.setItem('userId', String(userId))
+    } catch {}
     router.push(`/test-results?userId=${userId}`)
   }
 
