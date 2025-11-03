@@ -63,7 +63,9 @@ const Header = () => {
               <span>MyPage</span>
             </button>
             <Link href="/flexibility" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20c2-4 5-6 8-6s6 2 8 6"/><circle cx="12" cy="7" r="3"/></svg>
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
               <span>Stretch</span>
             </Link>
             <Link href="/about" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
@@ -127,7 +129,9 @@ const Header = () => {
                 <span>MyPage</span>
               </button>
               <Link href="/flexibility" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20c2-4 5-6 8-6s6 2 8 6"/><circle cx="12" cy="7" r="3"/></svg>
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                </svg>
                 <span>Stretch</span>
               </Link>
               <Link href="/about" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
