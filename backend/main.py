@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.db import ensure_schema
-from backend.routers import me as me_router
-from backend.routers import users as users_router
-from backend.routers import stats as stats_router
-from backend.routers import flexibility as flexibility_router
+from .db import ensure_schema
+from .routers import me as me_router
+from .routers import users as users_router
+from .routers import stats as stats_router
+from .routers import flexibility as flexibility_router
 
 
 # Initialize DB schema (idempotent)
