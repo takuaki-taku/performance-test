@@ -55,6 +55,18 @@ npx pm2 stop next-dev
 - トップ: http://localhost:3000
 - マイページ: http://localhost:3000/mypage
 
+環境変数（Firebase 認証用 例）:
+
+```env
+# frontend/.env.local に設定
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+```
+
 ---
 
 ### うまく表示できない時のチェックリスト
