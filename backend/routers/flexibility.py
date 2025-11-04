@@ -14,6 +14,16 @@ def read_flexibility_checks(db: Session = Depends(get_db)):
     return checks
 
 
+@router.get("/flexibility-check/{id}", response_model=FlexibilityCheckRead)
+def read_flexibility_check(id: str, db: Session = Depends(get_db)):
+    check = db.query(models.FlexibilityCheck).filter(
+        models.FlexibilityCheck.id == id).first()
+    if check is None:
+        raise HTTPException(
+            status_code=404, detail="Flexibility check not found")
+    return check
+
+
 @router.post("/flexibility-checks/", response_model=FlexibilityCheckRead)
 def create_flexibility_check(check: FlexibilityCheckCreate, db: Session = Depends(get_db)):
     db_check = models.FlexibilityCheck(**check.model_dump())
