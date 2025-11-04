@@ -27,6 +27,7 @@ const Header = () => {
           {/* デスクトップメニュー */}
           <div className="hidden md:flex space-x-8">
             <Link href="/"        className="text-gray-600 hover:text-gray-900">Home</Link>
+            <Link href="/karte" className="text-gray-600 hover:text-gray-900">Karte</Link>
             <Link href="/test-results" className="text-gray-600 hover:text-gray-900">Test Results</Link>
             <Link href="/flexibility"  className="text-gray-600 hover:text-gray-900">Stretch</Link>
             <Link href="/about" className="text-gray-600 hover:text-gray-900">
@@ -73,6 +74,9 @@ const Header = () => {
             <div className="flex flex-col space-y-4">
               <Link href="/" className="text-gray-600 hover:text-gray-900">
                 Home
+              </Link>
+              <Link href="/karte" className="text-gray-600 hover:text-gray-900">
+                Karte
               </Link>
               <Link href="/test-results" className="text-gray-600 hover:text-gray-900">
                 Test Results

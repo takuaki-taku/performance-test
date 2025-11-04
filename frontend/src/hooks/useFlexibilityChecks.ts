@@ -22,6 +22,28 @@ export const useFlexibilityChecks = () => {
 
     fetchChecks();
   }, []);
-
   return { checks, loading, error };
+}; 
+
+export const useFlexibilityCheck = (id: string) => {
+  const [check, setChecks] = useState<FlexibilityCheck>();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchChecks = async () => {
+      try {
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+        const response = await axios.get<FlexibilityCheck>(`${apiBase}/flexibility-check/${id}`);
+        setChecks(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError('柔軟性チェックのデータの取得に失敗しました');
+        setLoading(false);
+      }
+    };
+
+    fetchChecks();
+  }, []);
+  return { check, loading, error };
 }; 

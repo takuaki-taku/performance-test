@@ -381,6 +381,11 @@ def read_flexibility_checks(db: Session = Depends(get_db)):
     checks = db.query(FlexibilityCheck).all()
     return checks
 
+@app.get("/flexibility-check/{id}", response_model=FlexibilityCheckRead)
+def read_flexibility_checks(id: str, db: Session = Depends(get_db)):
+    check = db.query(FlexibilityCheck).filter(FlexibilityCheck.id == id).first()
+    return check
+
 @app.post("/flexibility-checks/", response_model=FlexibilityCheckRead)
 def create_flexibility_check(check: FlexibilityCheckCreate, db: Session = Depends(get_db)):
     db_check = FlexibilityCheck(**check.model_dump())
