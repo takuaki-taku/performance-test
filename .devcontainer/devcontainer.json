@@ -9,9 +9,12 @@
       },
       "ghcr.io/devcontainers/features/node:1": {
         "version": "18"
+      },
+      "ghcr.io/devcontainers/features/github-cli:1": {
+        "version": "latest"
       }
     },
-    "postCreateCommand": "pip install -r ./backend/requirements.txt && cd ./frontend && npm install && cd ..",
+    "postCreateCommand": "chmod +x .devcontainer/post-create.sh && .devcontainer/post-create.sh && pip install -r ./backend/requirements.txt && cd ./frontend && npm install && cd ..",
     "forwardPorts": [3000, 8000],
     "portsAttributes": {
       "3000": {
