@@ -1,3 +1,4 @@
+import uuid
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from ..deps import get_db
@@ -19,7 +20,7 @@ async def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.put("/users/{user_id}", response_model=UserRead)
-async def update_user(user_id: int, payload: UserUpdate, db: Session = Depends(get_db)):
+async def update_user(user_id: uuid.UUID, payload: UserUpdate, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -34,7 +35,7 @@ async def update_user(user_id: int, payload: UserUpdate, db: Session = Depends(g
 
 
 @router.get("/users/{user_id}", response_model=UserRead)
-async def read_user(user_id: int, db: Session = Depends(get_db)):
+async def read_user(user_id: uuid.UUID, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -59,7 +60,7 @@ async def create_user_result(user_result: UserResultCreate, db: Session = Depend
             SurfaceType(result_data["serfece"])  # バリデーション
         except ValueError:
             raise HTTPException(
-                status_code=400, 
+                status_code=400,
                 detail=f"Invalid serfece value: {result_data['serfece']}. Valid values: {[e.value for e in SurfaceType]}"
             )
     if result_data.get("test_format") is not None:
@@ -82,7 +83,8 @@ async def create_user_result(user_result: UserResultCreate, db: Session = Depend
 
 @router.delete("/user_results/{result_id}")
 async def delete_user_result(result_id: int, db: Session = Depends(get_db)):
-    result = db.query(models.UserResult).filter(models.UserResult.id == result_id).first()
+    result = db.query(models.UserResult).filter(
+        models.UserResult.id == result_id).first()
     if result is None:
         raise HTTPException(status_code=404, detail="Result not found")
     db.delete(result)
@@ -91,10 +93,9 @@ async def delete_user_result(result_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/user_results/{user_id}", response_model=List[UserResultRead])
-async def read_user_results(user_id: int, db: Session = Depends(get_db)):
-    results = db.query(models.UserResult).filter(models.UserResult.user_id == user_id).all()
+async def read_user_results(user_id: uuid.UUID, db: Session = Depends(get_db)):
+    results = db.query(models.UserResult).filter(
+        models.UserResult.user_id == user_id).all()
     if not results:
         raise HTTPException(status_code=404, detail="Results not found")
     return results
-
-

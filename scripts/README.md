@@ -51,6 +51,9 @@ python scripts/migrations/migrate_to_float.py
 
 # Enum型をInteger型に変更
 python scripts/migrations/migrate_to_integer_enums.py
+
+# User.idをInteger型からUUID型に変更（既存データ移行）
+python scripts/migrations/migrate_user_id_to_uuid.py
 ```
 
 ### GitHub CLIスクリプト
