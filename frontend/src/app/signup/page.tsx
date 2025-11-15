@@ -22,6 +22,12 @@ export default function SignupPage() {
         await updateProfile(cred.user, { displayName });
       }
       // サインアップ直後に /me を呼び、users テーブルに作成（なければ作成）し id を取得
+      // 古い数値形式のuserIdを削除（UUID移行対応）
+      const oldUserId = localStorage.getItem('userId');
+      if (oldUserId && !isNaN(Number(oldUserId))) {
+        localStorage.removeItem('userId');
+      }
+      
       try {
         const token = await getIdToken(cred.user!);
         const res = await api.get('/me', {

@@ -20,7 +20,14 @@ export default function Home() {
     if (isAuthenticated) {
       try {
         const raw = localStorage.getItem('userId');
-        if (raw) { // UUID文字列として扱う（Number()変換を削除）
+        if (raw) {
+          // 古い数値形式のuserIdを削除（UUID移行対応）
+          if (!isNaN(Number(raw)) && raw.length < 10) {
+            localStorage.removeItem('userId');
+            router.push('/login');
+            return;
+          }
+          // UUID文字列として扱う
           router.push(`/mypage/${raw}`);
         } else {
           router.push('/login');
