@@ -6,35 +6,43 @@ from pydantic import BaseModel, Field
 class UserCreate(BaseModel):
     name: str
     grade: str
+    birthday: Optional[datetime.date] = None
 
 
 class UserUpdate(BaseModel):
     name: Optional[str] = None
     grade: Optional[str] = None
+    birthday: Optional[datetime.date] = None
 
 
 class UserResultCreate(BaseModel):
     user_id: int
     date: datetime.date
-    long_jump_cm: int = Field(gt=0)
-    fifty_meter_run_ms: int = Field(gt=0)
-    spider_ms: int = Field(gt=0)
-    eight_shape_run_count: int = Field(gt=0)
-    ball_throw_cm: int = Field(gt=0)
+    long_jump_cm: float = Field(gt=0)
+    fifty_meter_run_ms: float = Field(gt=0)
+    spider_ms: float = Field(gt=0)
+    eight_shape_run_count: float = Field(gt=0)
+    ball_throw_cm: float = Field(gt=0)
+    _25m_run: Optional[float] = None
+    serfece: Optional[int] = None  # 1: 人工芝, 2: ハード, 3: クレー
+    test_format: Optional[int] = None  # 1: 全国大会, 2: 地域大会
 
 
 class UserResultRead(BaseModel):
     id: int
     user_id: int
     date: datetime.date
-    long_jump_cm: int
-    fifty_meter_run_ms: int
-    spider_ms: int
-    eight_shape_run_count: int
-    ball_throw_cm: int
+    long_jump_cm: float
+    fifty_meter_run_ms: float
+    spider_ms: float
+    eight_shape_run_count: float
+    ball_throw_cm: float
+    _25m_run: Optional[float] = None
+    serfece: Optional[int] = None  # 1: 人工芝, 2: ハード, 3: クレー
+    test_format: Optional[int] = None  # 1: 全国大会, 2: 地域大会
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # Pydantic V2
 
     @property
     def long_jump(self) -> float:
@@ -61,10 +69,11 @@ class UserRead(BaseModel):
     id: int
     name: str
     grade: str
+    birthday: Optional[datetime.date] = None
     results: List[UserResultRead]
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # Pydantic V2
 
 
 class AverageMaxDataBase(BaseModel):
@@ -86,7 +95,7 @@ class AverageMaxDataRead(AverageMaxDataBase):
     type: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # Pydantic V2
 
 
 class AverageDataBase(BaseModel):

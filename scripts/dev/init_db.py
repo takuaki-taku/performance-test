@@ -1,7 +1,15 @@
+import sys
+from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from main import Base, AverageData, MaxData, User, UserResult, FlexibilityCheck
 import datetime
+
+# プロジェクトルートをパスに追加
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+
+from backend.main import Base
+from backend.models import AverageData, MaxData, User, UserResult, FlexibilityCheck
 
 # データベースの設定
 DATABASE_URL = "sqlite:///./test.db"

@@ -51,6 +51,7 @@ Dev Containers: Reopen in Container
 - **Node.js 18** - フロントエンド開発用
 - **pip** - Python パッケージマネージャー
 - **npm** - Node.js パッケージマネージャー
+- **GitHub CLI (gh)** - GitHubのIssueやProjectをコマンドラインから操作
 
 ### ポート
 
@@ -126,6 +127,9 @@ Dev Containers: Remove Dev Container
 
 ### Q: コンテナ内で git commit できる？
 A: はい。ローカルの git 設定が引き継がれます。
+
+### Q: GitHub CLI (gh) は使える？
+A: はい。GitHub CLIがインストールされています。初回使用時は `gh auth login` で認証してください。
 
 ### Q: VS Code の拡張機能は使える？
 A: はい。devcontainer.json で自動インストールされる拡張機能に加えて、手動でインストールも可能です。

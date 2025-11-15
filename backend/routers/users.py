@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from ..deps import get_db
 from .. import models
+from ..enums import SurfaceType, TestFormat
 from ..schemas import UserCreate, UserRead, UserUpdate, UserResultCreate, UserResultRead
 from typing import List
 
@@ -50,7 +51,29 @@ async def read_users(db: Session = Depends(get_db), skip: int = 0, limit: int = 
 
 @router.post("/user_results/", response_model=UserResultRead)
 async def create_user_result(user_result: UserResultCreate, db: Session = Depends(get_db)):
-    db_user_result = models.UserResult(**user_result.dict())
+    result_data = user_result.dict()
+    # Enumの値が数値のため、そのまま使用（バリデーションは必要に応じて追加可能）
+    # 数値が有効なEnum値かチェック
+    if result_data.get("serfece") is not None:
+        try:
+            SurfaceType(result_data["serfece"])  # バリデーション
+        except ValueError:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Invalid serfece value: {result_data['serfece']}. Valid values: {[e.value for e in SurfaceType]}"
+            )
+    if result_data.get("test_format") is not None:
+        try:
+            TestFormat(result_data["test_format"])  # バリデーション
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid test_format value: {result_data['test_format']}. Valid values: {[e.value for e in TestFormat]}"
+            )
+    # Map _25m_run to the actual column name
+    if "_25m_run" in result_data:
+        result_data["_25m_run"] = result_data.pop("_25m_run")
+    db_user_result = models.UserResult(**result_data)
     db.add(db_user_result)
     db.commit()
     db.refresh(db_user_result)
