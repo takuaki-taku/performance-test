@@ -1,0 +1,27 @@
+name: Auto update project
+
+on:
+  issues:
+    types: [opened, closed, reopened]
+  pull_request:
+    types: [opened, closed, reopened, merged]
+
+jobs:
+  update-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add to project
+        if: github.event.action == 'opened' || github.event.action == 'reopened'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // Project IDを設定（ProjectのURLから取得可能）
+            const projectId = 'YOUR_PROJECT_ID';
+            
+            // IssueまたはPRをProjectに追加
+            await github.rest.projects.createCard({
+              column_id: projectId,
+              content_id: context.payload.issue?.id || context.payload.pull_request?.id,
+              content_type: context.payload.issue ? 'Issue' : 'PullRequest'
+            });
+
