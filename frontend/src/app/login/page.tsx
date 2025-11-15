@@ -16,6 +16,12 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // 古い数値形式のuserIdを削除（UUID移行対応）
+      const oldUserId = localStorage.getItem('userId');
+      if (oldUserId && !isNaN(Number(oldUserId))) {
+        localStorage.removeItem('userId');
+      }
+      
       const cred = await signInWithEmailAndPassword(auth, email, password);
       if (cred.user) {
         try {
