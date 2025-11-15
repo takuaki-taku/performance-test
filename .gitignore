@@ -16,6 +16,7 @@ frontend/build
 
 # misc
 .DS_Store
+.env
 .env.local
 .env.development.local
 .env.test.local
@@ -33,3 +34,7 @@ backend/venv/
 backend/instance/
 backend/*.sqlite  # SQLite database files
 backend/*.db  # SQLite database files (alternative extension)
+
+# Development scripts (keep structure, ignore temporary files)
+scripts/**/__pycache__/
+scripts/**/*.pyc
