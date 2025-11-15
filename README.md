@@ -31,11 +31,34 @@ This application is designed to manage and display physical test results for use
 *   **Backend:**
     *   FastAPI
     *   SQLAlchemy
-    *   SQLite (for development)
+    *   PostgreSQL / SQLite (for development)
 *   **Frontend:**
     *   React
     *   Axios
     *   React Bootstrap
+
+## Project Structure
+
+```
+Perf_test/
+├── backend/              # 本番アプリケーションコード
+│   ├── main.py          # FastAPIアプリケーション
+│   ├── models.py        # データベースモデル
+│   ├── schemas.py       # Pydanticスキーマ
+│   ├── routers/         # APIルーター
+│   └── ...
+│
+├── scripts/              # 開発・運用スクリプト
+│   ├── dev/             # 開発用スクリプト
+│   ├── migrations/      # データベースマイグレーション
+│   └── github/          # GitHub CLI用スクリプト
+│
+├── frontend/            # フロントエンド
+│
+└── docs/                # ドキュメント
+```
+
+詳細は [scripts/README.md](scripts/README.md) を参照してください。
 
 ## Quick Start with Dev Container (Recommended)
 
@@ -84,10 +107,17 @@ This application is designed to manage and display physical test results for use
     pip install -r requirements.txt
     ```
 
-4.  **Run the application:**
+4.  **Set up environment variables:**
 
     ```bash
-    uvicorn main:app --reload
+    cp .env.example .env
+    # .envファイルを編集してDATABASE_URLを設定
+    ```
+
+5.  **Run the application:**
+
+    ```bash
+    uvicorn backend.main:app --reload
     ```
 
     The backend will be accessible at `http://localhost:8000`.
@@ -130,7 +160,19 @@ This application is designed to manage and display physical test results for use
 
 ## Database Setup
 
-The backend uses SQLite for development. The database file is `test.db`. You can use a tool like DB Browser for SQLite to inspect the database.
+The backend uses PostgreSQL for production and SQLite for development. The database file is `test.db` for SQLite. You can use a tool like DB Browser for SQLite to inspect the database.
+
+### Database Migrations
+
+マイグレーションスクリプトは `scripts/migrations/` にあります。
+
+```bash
+# データベース初期化
+python scripts/dev/init_db.py
+
+# SQLiteからPostgreSQLへ移行
+python scripts/migrations/migrate_sqlite_to_postgres.py
+```
 
 ## Contributing
 
