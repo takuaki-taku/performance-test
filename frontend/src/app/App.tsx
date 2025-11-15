@@ -22,7 +22,12 @@ function App() {
                     const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
                     const response = await axios.get(`${apiBase}/users/${selectedUserId}`);
                     console.log("API Response:", response.data);
-                    setUserResults(response.data.results);
+                    // APIレスポンスのresultsにuser_idが含まれていることを確認
+                    const results: Result[] = (response.data.results || []).map((result: any) => ({
+                        ...result,
+                        user_id: result.user_id || selectedUserId
+                    }))
+                    setUserResults(results);
                     setSelectedUserName(response.data.name);
                 } catch (error: unknown) {
                     console.error(error);

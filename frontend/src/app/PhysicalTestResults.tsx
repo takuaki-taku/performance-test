@@ -123,12 +123,13 @@ function PhysicalTestResults({ userId }: PhysicalTestResultsProps) {
                     const response = await axios.get(`${apiBase}/user_results/${userId}`);
                     console.log("API Response (fetchUserResults):", response.data);
 
-                    // データを変換
-                    const convertedResults = response.data.map((result: Result) => {
+                    // データを変換（user_idを含める）
+                    const convertedResults = response.data.map((result: any) => {
                         console.log("Original Result:", result); // 変換前のデータを確認
 
                         return {
                             ...result,
+                            user_id: result.user_id || userId, // user_idを確実に含める
                             long_jump: result.long_jump_cm,
                             fifty_meter_run: result.fifty_meter_run_ms,
                             spider: result.spider_ms,

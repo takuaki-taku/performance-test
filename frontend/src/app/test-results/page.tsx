@@ -8,18 +8,9 @@ import UserForm from '../../components/UserForm'
 import UserList from '../../components/UserList'
 import ResultForm from '../../components/ResultForm'
 import ResultList from '../../components/ResultList'
+import { Result } from '@/types/Result'
 import axios from 'axios'
 import { useState } from 'react'
-
-interface Result {
-    id: number;
-    date: string;
-    long_jump_cm: number;
-    fifty_meter_run_ms: number;
-    spider_ms: number;
-    eight_shape_run_count: number;
-    ball_throw_cm: number;
-  }
 
 function TestResultsContent() {
   const isAuthenticated = useAuth()
@@ -49,7 +40,12 @@ function TestResultsContent() {
           axios.get(`${apiBase}/users/${userId}`),
           axios.get(`${apiBase}/user_results/${userId}`)
         ])
-        setUserResults(resultsResponse.data)
+        // APIレスポンスにuser_idが含まれていることを確認し、型を明示的に指定
+        const results: Result[] = resultsResponse.data.map((result: any) => ({
+          ...result,
+          user_id: result.user_id || userId // user_idが欠けている場合はuserIdを使用
+        }))
+        setUserResults(results)
         setSelectedUserName(userResponse.data.name)
       } catch (error) {
         console.error('データ取得に失敗しました:', error)
