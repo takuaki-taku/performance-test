@@ -1,11 +1,20 @@
+from backend.models import AverageMaxData, AverageData, MaxData, User
+from backend.main import Base
+import sys
+from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from main import Base, AverageMaxData, AverageData, MaxData, User
+
+# プロジェクトルートをパスに追加
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+
 
 # データベースの設定
 DATABASE_URL = "sqlite:///./test.db"
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
 
 def migrate_data():
     db = SessionLocal()
@@ -15,7 +24,7 @@ def migrate_data():
         db.query(MaxData).delete()
         db.query(User).delete()
         db.commit()
-        
+
         # テストユーザーを作成
         test_user = User(
             name="テストユーザー",
@@ -23,10 +32,10 @@ def migrate_data():
         )
         db.add(test_user)
         db.commit()
-        
+
         # 既存のAverageMaxDataを取得
         existing_data = db.query(AverageMaxData).all()
-        
+
         for data in existing_data:
             # 平均値データの作成
             if data.type == "平均値":
@@ -40,7 +49,7 @@ def migrate_data():
                     total_score=data.total_score
                 )
                 db.add(average_data)
-            
+
             # 最大値データの作成
             elif data.type == "最高値":
                 max_data = MaxData(
@@ -53,16 +62,17 @@ def migrate_data():
                     total_score=data.total_score
                 )
                 db.add(max_data)
-        
+
         # 変更をコミット
         db.commit()
         print("データの移行が完了しました。")
-        
+
     except Exception as e:
         db.rollback()
         print(f"エラーが発生しました: {e}")
     finally:
         db.close()
 
+
 if __name__ == "__main__":
-    migrate_data() 
+    migrate_data()

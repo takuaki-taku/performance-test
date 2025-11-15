@@ -1,11 +1,17 @@
+from backend.db import Base
+from backend.models import User, UserResult, AverageData, MaxData, AverageMaxData, FlexibilityCheck
 import os
 from typing import Type
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from backend.models import User, UserResult, AverageData, MaxData, AverageMaxData, FlexibilityCheck
-from backend.db import Base
+import sys
+from pathlib import Path
+
+# プロジェクトルートをパスに追加
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
 
 
 SOURCE_URL = os.getenv("SOURCE_DATABASE_URL", "sqlite:///./backend/test.db")
