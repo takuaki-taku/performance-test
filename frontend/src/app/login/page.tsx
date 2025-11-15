@@ -25,8 +25,8 @@ export default function LoginPage() {
             headers: { Authorization: `Bearer ${token}` },
           });
           const id = res?.data?.id;
-          if (typeof id === 'number') {
-            try { localStorage.setItem('userId', String(id)); } catch {}
+          if (typeof id === 'string') { // UUIDは文字列型
+            try { localStorage.setItem('userId', id); } catch {}
             router.push(`/mypage/${id}`);
           } else {
             router.push('/');

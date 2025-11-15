@@ -28,7 +28,7 @@ export default function SignupPage() {
           headers: { Authorization: `Bearer ${token}` },
         });
         const id = res?.data?.id;
-        if (typeof id === 'number') {
+        if (typeof id === 'string') { // UUIDは文字列型
           // displayName を users.name に反映（grade は空文字運用）
           if (displayName) {
             try {
@@ -40,7 +40,7 @@ export default function SignupPage() {
               console.warn('Failed to update user name:', e);
             }
           }
-          try { localStorage.setItem('userId', String(id)); } catch {}
+          try { localStorage.setItem('userId', id); } catch {}
           router.push(`/mypage/${id}`);
         } else {
           router.push('/');

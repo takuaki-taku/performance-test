@@ -7,20 +7,19 @@ import { useEffect } from 'react';
 
 export default function PhysicalTestResultsPage() {
     const params = useParams();
-    const userId = params.userId;
+    const userId = params.userId as string; // UUID文字列として扱う
     
     useEffect(() => {
-        const idNum = Number(userId);
-        if (!Number.isNaN(idNum)) {
+        if (userId) {
             try {
-                localStorage.setItem('userId', String(idNum));
+                localStorage.setItem('userId', userId);
             } catch {}
         }
     }, [userId]);
 
     return (
         <div>
-            <PhysicalTestResults userId={Number(userId)} />
+            <PhysicalTestResults userId={userId} />
         </div>
     );
 }

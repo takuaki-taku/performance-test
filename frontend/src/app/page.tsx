@@ -20,9 +20,8 @@ export default function Home() {
     if (isAuthenticated) {
       try {
         const raw = localStorage.getItem('userId');
-        const id = raw ? Number(raw) : NaN;
-        if (!Number.isNaN(id)) {
-          router.push(`/mypage/${id}`);
+        if (raw) { // UUID文字列として扱う（Number()変換を削除）
+          router.push(`/mypage/${raw}`);
         } else {
           router.push('/login');
         }

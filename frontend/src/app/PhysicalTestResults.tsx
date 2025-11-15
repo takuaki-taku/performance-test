@@ -39,7 +39,7 @@ ChartJS.register(
 );
 
 interface PhysicalTestResultsProps {
-    userId: number;
+    userId: string; // UUID型に変更
 }
 
 interface ChartData {

@@ -9,13 +9,13 @@ import { useRouter } from 'next/navigation';
 
 
 interface User {
-    id: number;
+    id: string; // UUID型に変更
     name: string;
     grade: string;
 }
 
 interface UserListProps {
-    onUserSelect: (userId: number) => void;
+    onUserSelect: (userId: string) => void;
 }
 
 const UserList: React.FC<UserListProps> = ({ onUserSelect }) => {
@@ -35,7 +35,7 @@ const UserList: React.FC<UserListProps> = ({ onUserSelect }) => {
         fetchUsers();
     }, []);
 
-    const handleUserClick = (userId: number) => {
+    const handleUserClick = (userId: string) => {
         onUserSelect(userId);
     };
 

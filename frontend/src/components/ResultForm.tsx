@@ -7,7 +7,7 @@ import axios from 'axios';
 import { Form, Button } from 'react-bootstrap';
 
 interface ResultFormProps {
-    userId: number | null;
+    userId: string | null; // UUID型に変更
 }
 
 // フォームフィールド用の小さなサブコンポーネント
