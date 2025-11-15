@@ -1,4 +1,5 @@
 import datetime
+import uuid
 from typing import List, Optional
 from pydantic import BaseModel, Field
 
@@ -16,7 +17,7 @@ class UserUpdate(BaseModel):
 
 
 class UserResultCreate(BaseModel):
-    user_id: int
+    user_id: uuid.UUID
     date: datetime.date
     long_jump_cm: float = Field(gt=0)
     fifty_meter_run_ms: float = Field(gt=0)
@@ -30,7 +31,7 @@ class UserResultCreate(BaseModel):
 
 class UserResultRead(BaseModel):
     id: int
-    user_id: int
+    user_id: uuid.UUID
     date: datetime.date
     long_jump_cm: float
     fifty_meter_run_ms: float
@@ -66,7 +67,7 @@ class UserResultRead(BaseModel):
 
 
 class UserRead(BaseModel):
-    id: int
+    id: uuid.UUID
     name: str
     grade: str
     birthday: Optional[datetime.date] = None

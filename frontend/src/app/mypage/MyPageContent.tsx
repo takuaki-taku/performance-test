@@ -34,7 +34,7 @@ type RecentTraining = {
 };
 
 interface MyPageContentProps {
-  userId: number;
+  userId: string; // UUID型に変更
 }
 
 export default function MyPageContent({ userId }: MyPageContentProps) {

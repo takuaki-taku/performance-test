@@ -7,7 +7,7 @@ import { Result } from '@/types/Result';
 
 interface ResultListProps {
     results: Result[] | null;
-    userId: number;
+    userId: string; // UUID型に変更
     onResultDeleted: (resultId: number) => void;
 }
 

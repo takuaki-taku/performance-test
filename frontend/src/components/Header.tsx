@@ -12,12 +12,9 @@ const Header = () => {
   const goMyPage = () => {
     try {
       const raw = localStorage.getItem('userId');
-      if (raw) {
-        const id = Number(raw);
-        if (!Number.isNaN(id)) {
-          router.push(`/mypage/${id}`);
-          return;
-        }
+      if (raw) { // UUID文字列として扱う（Number()変換を削除）
+        router.push(`/mypage/${raw}`);
+        return;
       }
     } catch {}
     router.push('/login');

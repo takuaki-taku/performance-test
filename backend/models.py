@@ -1,13 +1,55 @@
 import datetime
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float, DateTime, Enum
+import uuid
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float, DateTime, Enum, TypeDecorator
+from sqlalchemy.dialects.postgresql import UUID as PostgresUUID
 from sqlalchemy.orm import relationship
 from .db import Base
 from .enums import SurfaceType, TestFormat
 
 
+class GUID(TypeDecorator):
+    """Platform-independent GUID type.
+    Uses PostgreSQL's UUID type, otherwise uses TEXT.
+    """
+    impl = String
+    cache_ok = True
+
+    def load_dialect_impl(self, dialect):
+        if dialect.name == 'postgresql':
+            return dialect.type_descriptor(PostgresUUID(as_uuid=True))
+        else:
+            return dialect.type_descriptor(String(36))
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return value
+        elif dialect.name == 'postgresql':
+            # PostgreSQLはUUID型を直接受け取る
+            return value
+        else:
+            # SQLiteはTEXT型として保存
+            if not isinstance(value, uuid.UUID):
+                return str(uuid.UUID(value))
+            return str(value)
+
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return value
+        elif dialect.name == 'postgresql':
+            # PostgreSQLはUUID型を直接返す
+            if not isinstance(value, uuid.UUID):
+                return uuid.UUID(value) if value else None
+            return value
+        else:
+            # SQLiteはTEXT型からUUIDに変換
+            if not isinstance(value, uuid.UUID):
+                return uuid.UUID(value) if value else None
+            return value
+
+
 class User(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(GUID(), primary_key=True, default=uuid.uuid4, index=True)
     name = Column(String, index=True)
     grade = Column(String)
     firebase_uid = Column(String, unique=True, index=True, nullable=True)
@@ -19,7 +61,7 @@ class UserResult(Base):
     __tablename__ = "user_results"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"),
+    user_id = Column(GUID(), ForeignKey("users.id"),
                      index=True, nullable=False)
     date = Column(Date, nullable=False)
     long_jump_cm = Column(Float, nullable=False)

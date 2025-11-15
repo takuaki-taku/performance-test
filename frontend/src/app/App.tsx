@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment, @typescript-eslint/no-unused-vars */
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -11,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { Result } from '@/types/Result';
 
 function App() {
-    const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+    const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
     const [selectedUserName, setSelectedUserName] = useState<string | null>(null);
     const [userResults, setUserResults] = useState<Result[] | null>(null);
     const router = useRouter();
@@ -37,7 +36,7 @@ function App() {
         fetchUserResults();
     }, [selectedUserId]);
 
-    const handleUserSelect = (userId: number) => {
+    const handleUserSelect = (userId: string) => {
         setSelectedUserId(userId);
         router.push(`/?userId=${userId}`);
     };

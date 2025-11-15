@@ -26,7 +26,7 @@ function TestResultsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const userIdParam = searchParams.get('userId')
-  const userId = userIdParam ? Number(userIdParam) : null
+  const userId = userIdParam || null // UUID文字列として扱う（Number()変換を削除）
   const [selectedUserName, setSelectedUserName] = useState<string | null>(null)
   const [userResults, setUserResults] = useState<Result[] | null>(null)
 
@@ -59,9 +59,9 @@ function TestResultsContent() {
     fetchUserResults()
   }, [userId])
 
-  const handleUserSelect = (userId: number) => {
+  const handleUserSelect = (userId: string) => {
     try {
-      localStorage.setItem('userId', String(userId))
+      localStorage.setItem('userId', userId)
     } catch {}
     router.push(`/test-results?userId=${userId}`)
   }
