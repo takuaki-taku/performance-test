@@ -6,7 +6,7 @@ from ..schemas import (
     TrainingCreate, TrainingRead,
     UserTrainingResultCreate, UserTrainingResultRead, UserTrainingResultWithTraining
 )
-from typing import List
+from typing import List, Optional
 from ..enums import TrainingType, AchievementLevel
 
 router = APIRouter()
@@ -14,7 +14,7 @@ router = APIRouter()
 
 @router.get("/trainings/", response_model=List[TrainingRead])
 def read_trainings(
-    training_type: int = None,
+    training_type: Optional[int] = None,
     db: Session = Depends(get_db)
 ):
     """全トレーニングを取得（training_typeでフィルタリング可能）"""

@@ -5,7 +5,6 @@ from .db import ensure_schema
 from .routers import me as me_router
 from .routers import users as users_router
 from .routers import stats as stats_router
-from .routers import flexibility as flexibility_router
 from .routers import trainings as trainings_router
 
 
@@ -35,5 +34,4 @@ app.add_middleware(
 app.include_router(me_router.router)
 app.include_router(users_router.router)
 app.include_router(stats_router.router)
-app.include_router(flexibility_router.router)
 app.include_router(trainings_router.router)
