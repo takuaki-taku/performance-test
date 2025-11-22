@@ -100,19 +100,6 @@ class MaxData(Base):
     total_score = Column(Integer)
 
 
-class AverageMaxData(Base):
-    __tablename__ = "average_max_data"
-    id = Column(Integer, primary_key=True, index=True)
-    grade = Column(String, index=True, nullable=False)
-    type = Column(String, index=True)
-    long_jump_cm = Column(Integer, nullable=False)
-    fifty_meter_run_ms = Column(Integer, nullable=False)
-    spider_ms = Column(Integer, nullable=False)
-    eight_shape_run_count = Column(Integer, nullable=False)
-    ball_throw_cm = Column(Integer, nullable=False)
-    total_score = Column(Integer)
-
-
 class FlexibilityCheck(Base):
     __tablename__ = "flexibility_checks"
     id = Column(Integer, primary_key=True, index=True)

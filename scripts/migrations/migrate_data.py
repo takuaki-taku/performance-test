@@ -1,4 +1,4 @@
-from backend.models import AverageMaxData, AverageData, MaxData, User
+from backend.models import AverageData, MaxData, User
 from backend.main import Base
 import sys
 from pathlib import Path
@@ -33,35 +33,10 @@ def migrate_data():
         db.add(test_user)
         db.commit()
 
-        # 既存のAverageMaxDataを取得
-        existing_data = db.query(AverageMaxData).all()
-
-        for data in existing_data:
-            # 平均値データの作成
-            if data.type == "平均値":
-                average_data = AverageData(
-                    grade=data.grade,
-                    long_jump_cm=data.long_jump_cm,
-                    fifty_meter_run_ms=data.fifty_meter_run_ms,
-                    spider_ms=data.spider_ms,
-                    eight_shape_run_count=data.eight_shape_run_count,
-                    ball_throw_cm=data.ball_throw_cm,
-                    total_score=data.total_score
-                )
-                db.add(average_data)
-
-            # 最大値データの作成
-            elif data.type == "最高値":
-                max_data = MaxData(
-                    grade=data.grade,
-                    long_jump_cm=data.long_jump_cm,
-                    fifty_meter_run_ms=data.fifty_meter_run_ms,
-                    spider_ms=data.spider_ms,
-                    eight_shape_run_count=data.eight_shape_run_count,
-                    ball_throw_cm=data.ball_throw_cm,
-                    total_score=data.total_score
-                )
-                db.add(max_data)
+        # 注意: average_max_dataテーブルは削除されました
+        # データ移行は既に完了しているため、この処理は不要です
+        # もしaverage_max_dataテーブルからデータを移行する必要がある場合は、
+        # テーブルが存在することを確認してから実行してください
 
         # 変更をコミット
         db.commit()

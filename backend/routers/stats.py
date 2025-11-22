@@ -4,8 +4,7 @@ from ..deps import get_db
 from .. import models
 from ..schemas import (
     AverageDataCreate, AverageDataResponse,
-    MaxDataCreate, MaxDataResponse,
-    AverageMaxDataCreate, AverageMaxDataRead
+    MaxDataCreate, MaxDataResponse
 )
 from typing import List
 
@@ -46,22 +45,3 @@ def read_max_data_by_grade(grade: str, db: Session = Depends(get_db)):
     if db_max_data is None:
         raise HTTPException(status_code=404, detail="Max data not found")
     return db_max_data
-
-
-@router.post("/average_max_data/", response_model=AverageMaxDataRead)
-async def create_average_max_data(average_max_data: AverageMaxDataCreate, db: Session = Depends(get_db)):
-    db_average_max_data = models.AverageMaxData(
-        **average_max_data.model_dump())
-    db.add(db_average_max_data)
-    db.commit()
-    db.refresh(db_average_max_data)
-    return db_average_max_data
-
-
-@router.get("/average_max_data/grade/{grade}", response_model=List[AverageMaxDataRead])
-async def read_average_max_data_by_grade(grade: str, db: Session = Depends(get_db)):
-    average_max_data = db.query(models.AverageMaxData).filter(
-        models.AverageMaxData.grade == grade).all()
-    if average_max_data is None:
-        raise HTTPException(status_code=404, detail="AverageMaxData not found")
-    return average_max_data

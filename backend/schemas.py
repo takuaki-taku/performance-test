@@ -77,28 +77,6 @@ class UserRead(BaseModel):
         from_attributes = True  # Pydantic V2
 
 
-class AverageMaxDataBase(BaseModel):
-    grade: str
-    long_jump: float
-    fifty_meter_run: float
-    spider: float
-    eight_shape_run: int
-    ball_throw: float
-    total_score: Optional[int] = None
-
-
-class AverageMaxDataCreate(AverageMaxDataBase):
-    pass
-
-
-class AverageMaxDataRead(AverageMaxDataBase):
-    id: int
-    type: str
-
-    class Config:
-        from_attributes = True  # Pydantic V2
-
-
 class AverageDataBase(BaseModel):
     grade: str
     long_jump_cm: float
