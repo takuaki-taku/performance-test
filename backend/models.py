@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float, DateTim
 from sqlalchemy.dialects.postgresql import UUID as PostgresUUID
 from sqlalchemy.orm import relationship
 from .db import Base
-from .enums import SurfaceType, TestFormat
+from .enums import SurfaceType, TestFormat, TrainingType, AchievementLevel
 
 
 class GUID(TypeDecorator):
@@ -55,6 +55,7 @@ class User(Base):
     firebase_uid = Column(String, unique=True, index=True, nullable=True)
     birthday = Column(Date, nullable=True)
     results = relationship("UserResult", back_populates="user")
+    training_results = relationship("UserTrainingResult", back_populates="user")
 
 
 class UserResult(Base):
@@ -100,19 +101,39 @@ class MaxData(Base):
     total_score = Column(Integer)
 
 
-class AverageMaxData(Base):
-    __tablename__ = "average_max_data"
+class Training(Base):
+    """トレーニング項目マスタ（ストレッチ、コア、筋トレ、ラダーなど）"""
+    __tablename__ = "trainings"
     id = Column(Integer, primary_key=True, index=True)
-    grade = Column(String, index=True, nullable=False)
-    type = Column(String, index=True)
-    long_jump_cm = Column(Integer, nullable=False)
-    fifty_meter_run_ms = Column(Integer, nullable=False)
-    spider_ms = Column(Integer, nullable=False)
-    eight_shape_run_count = Column(Integer, nullable=False)
-    ball_throw_cm = Column(Integer, nullable=False)
-    total_score = Column(Integer)
+    training_type = Column(Integer, nullable=False, index=True)  # TrainingType Enum
+    title = Column(String, nullable=False)
+    image_path = Column(String, nullable=True)  # 画像がある場合
+    description = Column(String, nullable=False)
+    instructions = Column(String, nullable=True)  # 実施方法の詳細
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow,
+                        onupdate=datetime.datetime.utcnow)
+    results = relationship("UserTrainingResult", back_populates="training")
 
 
+class UserTrainingResult(Base):
+    """ユーザーのトレーニング実施結果"""
+    __tablename__ = "user_training_results"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(GUID(), ForeignKey("users.id"), index=True, nullable=False)
+    training_id = Column(Integer, ForeignKey("trainings.id"), nullable=False, index=True)
+    date = Column(Date, nullable=False, index=True)
+    achievement_level = Column(Integer, nullable=False)  # AchievementLevel Enum (1-3)
+    comment = Column(String, nullable=True)  # コメント/フィードバック
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow,
+                        onupdate=datetime.datetime.utcnow)
+    
+    user = relationship("User", back_populates="training_results")
+    training = relationship("Training", back_populates="results")
+
+
+# 後方互換性のため、FlexibilityCheckは残しておく（将来的に削除予定）
 class FlexibilityCheck(Base):
     __tablename__ = "flexibility_checks"
     id = Column(Integer, primary_key=True, index=True)

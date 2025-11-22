@@ -1,5 +1,5 @@
 from backend.db import Base
-from backend.models import User, UserResult, AverageData, MaxData, AverageMaxData, FlexibilityCheck
+from backend.models import User, UserResult, AverageData, MaxData, FlexibilityCheck
 import os
 from typing import Type
 
@@ -42,7 +42,6 @@ def main() -> None:
             copy_table(src, dst, UserResult)
             copy_table(src, dst, AverageData)
             copy_table(src, dst, MaxData)
-            copy_table(src, dst, AverageMaxData)
             copy_table(src, dst, FlexibilityCheck)
             dst.commit()
             print("Migration completed successfully")

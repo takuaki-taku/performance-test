@@ -156,7 +156,10 @@ Perf_test/
     *   `POST /user_results/`: Create a new result for a user.
     *   `DELETE /user_results/{result_id}`: Delete a result.
 *   **Average/Max Data:**
-    *   `GET /average_max_data/grade/{grade}`: Get average/max data for a specific grade.
+    *   `GET /average_data/grade/{grade}`: Get average data for a specific grade.
+    *   `GET /max_data/grade/{grade}`: Get max data for a specific grade.
+    *   `POST /average_data/`: Create average data.
+    *   `POST /max_data/`: Create max data.
 
 ## Database Setup
 

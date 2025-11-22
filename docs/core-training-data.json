@@ -1,0 +1,73 @@
+[
+  {
+    "training_type": 2,
+    "title": "Plank (プランク)",
+    "image_path": null,
+    "description": "体幹を鍛える基本的なエクササイズ",
+    "instructions": "お尻を締める"
+  },
+  {
+    "training_type": 2,
+    "title": "Side Plank (サイドプランク)",
+    "image_path": null,
+    "description": "体幹と内転筋を鍛える横向きのプランク",
+    "instructions": "肩、腰がまっすぐ横向きなってるかチェック"
+  },
+  {
+    "training_type": 2,
+    "title": "Superman Back (手後ろスーパーマン)",
+    "image_path": null,
+    "description": "背中と体幹を鍛えるエクササイズ",
+    "instructions": "足は上げない"
+  },
+  {
+    "training_type": 2,
+    "title": "Superman Front (手前スーパーマン)",
+    "image_path": null,
+    "description": "体幹と肩を鍛えるエクササイズ",
+    "instructions": "足は上げない\n肘を曲げない"
+  },
+  {
+    "training_type": 2,
+    "title": "Arm Circles (手を卍卍)",
+    "image_path": null,
+    "description": "肩甲骨を動かして肩周りをほぐすエクササイズ",
+    "instructions": "足は上げない\n手を大きく動かす(肩甲骨から)"
+  },
+  {
+    "training_type": 2,
+    "title": "Dead Bug (デッドバグ)",
+    "image_path": null,
+    "description": "体幹の安定性を高めるエクササイズ",
+    "instructions": "腰が浮かないように"
+  },
+  {
+    "training_type": 2,
+    "title": "Glute Squeeze (お尻キュっと)",
+    "image_path": null,
+    "description": "お尻と体幹を鍛えるエクササイズ",
+    "instructions": "腰が反らないように\nお腹はデッドバグと力の入れ方が似ている"
+  },
+  {
+    "training_type": 2,
+    "title": "Knee Stand (膝立ち)",
+    "image_path": null,
+    "description": "体幹の安定性とバランスを鍛えるエクササイズ",
+    "instructions": "腰の高さを一定に\nゆっくりスムーズに行う"
+  },
+  {
+    "training_type": 2,
+    "title": "Scapular Push-up (肩甲骨腕立て)",
+    "image_path": null,
+    "description": "肩甲骨の動きと体幹を鍛えるエクササイズ",
+    "instructions": "肘を曲げない\n肩甲骨を動かす\n腰、お腹負けないように"
+  },
+  {
+    "training_type": 2,
+    "title": "Step-up (ステップアップ)",
+    "image_path": null,
+    "description": "下半身と体幹を鍛えるエクササイズ",
+    "instructions": "腰に手を当て腰が動かないように\n上からスタートして、お尻を斜め後ろに落としていくイメージ\nふとももの後ろ(ハムストリングスやお尻)に感じたらGOOD"
+  }
+]
+

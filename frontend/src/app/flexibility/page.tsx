@@ -77,14 +77,16 @@ export default function FlexibilityPage() {
                 <CardTitle>{check.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="relative w-full h-48 mb-4">
-                  <Image
-                    src={check.image_path}
-                    alt={check.title}
-                    fill
-                    className="object-contain"
-                  />
-                </div>
+                {check.image_path && (
+                  <div className="relative w-full h-48 mb-4">
+                    <Image
+                      src={check.image_path}
+                      alt={check.title}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                )}
                 <p className="whitespace-pre-line">{check.description}</p>
               </CardContent>
             </Card>
