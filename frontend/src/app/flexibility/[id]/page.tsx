@@ -27,15 +27,23 @@ export default function FlexibilityDetailPage() {
     <div className="container mx-auto p-4">
       <h1 className="mb-4 text-3xl font-bold">{check.title}</h1>
       {/* 画像・説明・やり方など好きに配置 */}
-      <p className="whitespace-pre-line">{check.description}</p>
+      {check.image_path && (
         <div className="relative w-full h-48 mb-4">
-            <Image
+          <Image
             src={check.image_path}
             alt={check.title}
             fill
             className="object-contain"
-            />
+          />
         </div>
+      )}
+      <p className="whitespace-pre-line">{check.description}</p>
+      {check.instructions && (
+        <div className="mt-4 p-4 bg-gray-100 rounded-lg">
+          <h2 className="font-bold mb-2">実施方法</h2>
+          <p className="whitespace-pre-line">{check.instructions}</p>
+        </div>
+      )}
     </div>
   );
 }
