@@ -9,7 +9,8 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from backend.main import Base
-from backend.models import AverageData, MaxData, User, UserResult, FlexibilityCheck
+from backend.models import AverageData, MaxData, User, UserResult, FlexibilityCheck, Training
+from backend.enums import TrainingType
 
 # データベースの設定
 DATABASE_URL = "sqlite:///./test.db"
@@ -78,6 +79,79 @@ def init_database():
         
         for check in flexibility_checks:
             db.add(check)
+        
+        # Trainingテーブルにも同じデータを投入（flexibility_checksとの互換性のため）
+        # 既存のTrainingデータがあるかチェック
+        existing_trainings = db.query(Training).filter(
+            Training.training_type == TrainingType.FLEXIBILITY.value
+        ).count()
+        
+        if existing_trainings == 0:
+            trainings = [
+                Training(
+                    training_type=TrainingType.FLEXIBILITY.value,
+                    title='Bent forward',
+                    image_path='/images/flexibility/1.bent_forword.PNG',
+                    description='拳が地面につけばOK'
+                ),
+                Training(
+                    training_type=TrainingType.FLEXIBILITY.value,
+                    title='Quad stretch',
+                    image_path='/images/flexibility/2.quad_stretch.PNG',
+                    description='お尻と踵の隙間が拳一個分以内ならOK'
+                ),
+                Training(
+                    training_type=TrainingType.FLEXIBILITY.value,
+                    title='The split',
+                    image_path='/images/flexibility/3.the_split.PNG',
+                    description='肘が地面につけばOK\nおでこがつけばベリーグッド'
+                ),
+                Training(
+                    training_type=TrainingType.FLEXIBILITY.value,
+                    title='Butterfly',
+                    image_path='/images/flexibility/4.butterfly.PNG',
+                    description='足裏合わせて、膝と地面が拳一個分以内ならOK'
+                ),
+                Training(
+                    training_type=TrainingType.FLEXIBILITY.value,
+                    title='Spine twist',
+                    image_path='/images/flexibility/5.spine_twist.PNG',
+                    description='膝を揃えてつけながら、肩がつけばOK'
+                ),
+                Training(
+                    training_type=TrainingType.FLEXIBILITY.value,
+                    title='Spine twist (失敗例)',
+                    image_path='/images/flexibility/5.5.spine_twist.PNG',
+                    description='膝を揃えてつけながら、肩がつけばOK'
+                ),
+                Training(
+                    training_type=TrainingType.FLEXIBILITY.value,
+                    title='Shoulder flexibility',
+                    image_path='/images/flexibility/6.Shoulder_flexibility.PNG',
+                    description='後ろで手が組めるか両方\n※特に利き手が下の方'
+                ),
+                Training(
+                    training_type=TrainingType.FLEXIBILITY.value,
+                    title='Bridge',
+                    image_path='/images/flexibility/7.bridge.PNG',
+                    description='ブリッジ'
+                ),
+                Training(
+                    training_type=TrainingType.FLEXIBILITY.value,
+                    title='Ankle mobility(レベル0)',
+                    image_path='/images/flexibility/8.ankle.PNG',
+                    description='かかとをついたまましゃがめるか\nステップ1　手を前にしてOK\nステップ2　手を後ろで組む'
+                ),
+                Training(
+                    training_type=TrainingType.FLEXIBILITY.value,
+                    title='Ankle mobility (レベル１)',
+                    image_path='/images/flexibility/8.5.ankle.PNG',
+                    description='かかとをついたまましゃがめるか\nステップ1　手を前にしてOK\nステップ2　手を後ろで組む'
+                )
+            ]
+            
+            for training in trainings:
+                db.add(training)
         
         # 変更をコミット
         db.commit()
