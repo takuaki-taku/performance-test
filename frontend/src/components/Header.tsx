@@ -64,6 +64,24 @@ const Header = () => {
               </svg>
               <span>Stretch</span>
             </Link>
+            <Link href="/core" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+              <svg
+                className="w-5 h-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="3" />
+                <path d="M12 2v4" />
+                <path d="M12 18v4" />
+                <path d="M2 12h4" />
+                <path d="M18 12h4" />
+              </svg>
+              <span>Core</span>
+            </Link>
             <Link href="/about" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
               <span>About</span>
@@ -125,6 +143,24 @@ const Header = () => {
                     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                   </svg>
                   <span>Stretch</span>
+                </Link>
+                <Link href="/core" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+                  <svg
+                    className="w-5 h-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M12 2v4" />
+                    <path d="M12 18v4" />
+                    <path d="M2 12h4" />
+                    <path d="M18 12h4" />
+                  </svg>
+                  <span>Core</span>
                 </Link>
               <Link href="/about" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
