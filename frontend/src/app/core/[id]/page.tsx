@@ -1,8 +1,9 @@
-'use client';
+ 'use client';
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
+import axios from 'axios';
 import {
   useCoreTrainings,
   useFlexibilityCheck,
@@ -30,7 +31,10 @@ export default function CoreTrainingDetailPage() {
   const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
-   const [hasPlayedForCycle, setHasPlayedForCycle] = useState(false);
+  const [hasPlayedForCycle, setHasPlayedForCycle] = useState(false);
+  const [statusComment, setStatusComment] = useState('');
+  const [savingStatus, setSavingStatus] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   // タイマー終了時に鳴らす簡易ビープ音（3連音で少し「それっぽく」）
   const playBeep = () => {
@@ -142,6 +146,41 @@ export default function CoreTrainingDetailPage() {
       setHasPlayedForCycle(true);
     }
   }, [remainingSeconds, isRunning, hasPlayedForCycle]);
+
+  const handleSaveStartedStatus = async () => {
+    if (!training) return;
+    let userId: string | null = null;
+    try {
+      userId = window.localStorage.getItem('userId');
+    } catch {
+      // ignore
+    }
+    if (!userId) {
+      setStatusMessage('ログインしていないため、ステータスを保存できません。');
+      return;
+    }
+
+    setSavingStatus(true);
+    setStatusMessage(null);
+    try {
+      const apiBase =
+        process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+      const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+      await axios.post(`${apiBase}/user-training-results/`, {
+        user_id: userId,
+        training_id: training.id,
+        date: today,
+        achievement_level: 4, // STARTED_NO_EVAL
+        comment: statusComment || null,
+      });
+      setStatusMessage('今日のトレーニング開始を記録しました。');
+      setStatusComment('');
+    } catch {
+      setStatusMessage('ステータスの保存に失敗しました。少し時間をおいて再度お試しください。');
+    } finally {
+      setSavingStatus(false);
+    }
+  };
 
   const loading = trainingsLoading || trainingLoading;
   const error = trainingsError || trainingError;
@@ -266,6 +305,32 @@ export default function CoreTrainingDetailPage() {
               リセット
             </button>
           </div>
+        </section>
+
+        {/* 今日の進捗記録（評価なし） */}
+        <section className="mt-4 p-4 bg-white rounded-lg border border-gray-100">
+          <h2 className="font-bold mb-2 text-sm">今日の進捗</h2>
+          <p className="mb-2 text-xs text-gray-600">
+            この体幹トレーニングに取り組んだことを記録します（評価は後でコーチがつけます）。
+          </p>
+          <textarea
+            className="w-full rounded-md border border-gray-300 px-2 py-1 text-sm mb-2"
+            rows={2}
+            placeholder="メモ（任意）: 何セットできたか、きつかった点など"
+            value={statusComment}
+            onChange={(e) => setStatusComment(e.target.value)}
+          />
+          <button
+            type="button"
+            className="mt-1 rounded bg-emerald-600 px-4 py-2 text-xs font-semibold text-white disabled:opacity-50"
+            onClick={handleSaveStartedStatus}
+            disabled={savingStatus}
+          >
+            {savingStatus ? '保存中…' : '今日このトレーニングを行ったことを記録する'}
+          </button>
+          {statusMessage && (
+            <p className="mt-2 text-xs text-gray-700">{statusMessage}</p>
+          )}
         </section>
       </div>
 

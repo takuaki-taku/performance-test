@@ -144,7 +144,7 @@ class UserTrainingResultBase(BaseModel):
     user_id: uuid.UUID
     training_id: int
     date: datetime.date
-    achievement_level: int = Field(ge=1, le=3)  # AchievementLevel Enum (1-3)
+    achievement_level: int = Field(ge=1, le=4)  # AchievementLevel Enum (1-4)
     comment: Optional[str] = None
 
 
@@ -187,3 +187,20 @@ class FlexibilityCheckRead(FlexibilityCheckBase):
 
     class Config:
         from_attributes = True
+
+
+class UserTrainingCategorySummary(BaseModel):
+    """ユーザーのカテゴリ別トレーニングサマリ"""
+    training_type: int
+    training_type_label: str
+    needs_improvement: int
+    achieved: int
+    excellent: int
+
+
+class UserTrainingSummaryResponse(BaseModel):
+    """ユーザーのトレーニングサマリ（カテゴリ別集計）"""
+    user_id: uuid.UUID
+    total_trainings_with_status: int
+    categories: List[UserTrainingCategorySummary]
+

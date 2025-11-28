@@ -28,7 +28,11 @@ class TrainingType(enum.Enum):
 
 
 class AchievementLevel(enum.Enum):
-    """達成度レベルのEnum（3段階）"""
+    """達成度レベルのEnum（4段階）
+
+    4 は「評価はまだだが、このトレーニングに取り組み始めた」という状態を表す。
+    """
     NEEDS_IMPROVEMENT = 1  # 要改善
-    ACHIEVED = 2  # 達成
-    EXCELLENT = 3  # 優秀
+    ACHIEVED = 2          # 達成
+    EXCELLENT = 3         # 優秀
+    STARTED_NO_EVAL = 4   # 評価なし（取り組み開始のみ）

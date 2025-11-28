@@ -3,11 +3,17 @@ from sqlalchemy.orm import Session
 from ..deps import get_db
 from .. import models
 from ..schemas import (
-    TrainingCreate, TrainingRead,
-    UserTrainingResultCreate, UserTrainingResultRead, UserTrainingResultWithTraining
+    TrainingCreate,
+    TrainingRead,
+    UserTrainingResultCreate,
+    UserTrainingResultRead,
+    UserTrainingResultWithTraining,
+    UserTrainingSummaryResponse,
+    UserTrainingCategorySummary,
 )
-from typing import List, Optional
+from typing import List, Optional, Dict
 from ..enums import TrainingType, AchievementLevel
+import uuid
 
 router = APIRouter()
 
@@ -208,4 +214,96 @@ def delete_user_training_result(result_id: int, db: Session = Depends(get_db)):
     db.delete(db_result)
     db.commit()
     return {"message": "User training result deleted successfully"}
+
+
+@router.get(
+    "/user-training-summary/{user_id}",
+    response_model=UserTrainingSummaryResponse,
+)
+def read_user_training_summary(
+    user_id: uuid.UUID,
+    db: Session = Depends(get_db),
+):
+    """
+    ユーザーのトレーニングサマリ（カテゴリ別・熟練度別の件数）を取得
+
+    - 1種目につき最新の記録だけを対象にする
+    - achievement_level:
+        1 -> needs_improvement
+        2 -> achieved
+        3 -> excellent
+    """
+    # ユーザー存在確認
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # trainings と user_training_results を JOIN し、ユーザーの全結果を取得
+    # 後続の処理で「トレーニングごとに最新1件」に絞り込む
+    joined_results: List[models.UserTrainingResult] = (
+        db.query(models.UserTrainingResult)
+        .join(
+            models.Training,
+            models.UserTrainingResult.training_id == models.Training.id,
+        )
+        .filter(models.UserTrainingResult.user_id == user_id)
+        .order_by(
+            models.UserTrainingResult.training_id,
+            models.UserTrainingResult.date.desc(),
+        )
+        .all()
+    )
+
+    # トレーニングごとに最新1件を採用
+    latest_by_training: Dict[int, models.UserTrainingResult] = {}
+    for r in joined_results:
+        if r.training_id not in latest_by_training:
+            latest_by_training[r.training_id] = r
+
+    total_trainings_with_status = len(latest_by_training)
+
+    # カテゴリ別に集計
+    summary_by_type: Dict[int, Dict[str, int]] = {}
+    for result in latest_by_training.values():
+        training: models.Training = result.training
+        training_type_value = training.training_type
+
+        if training_type_value not in summary_by_type:
+            summary_by_type[training_type_value] = {
+                "needs_improvement": 0,
+                "achieved": 0,
+                "excellent": 0,
+            }
+
+        level = result.achievement_level
+        if level == AchievementLevel.NEEDS_IMPROVEMENT.value:
+            summary_by_type[training_type_value]["needs_improvement"] += 1
+        elif level == AchievementLevel.ACHIEVED.value:
+            summary_by_type[training_type_value]["achieved"] += 1
+        elif level == AchievementLevel.EXCELLENT.value:
+            summary_by_type[training_type_value]["excellent"] += 1
+
+    categories: List[UserTrainingCategorySummary] = []
+    for training_type_value, counts in summary_by_type.items():
+        try:
+            training_type_enum = TrainingType(training_type_value)
+            training_type_label = training_type_enum.name
+        except ValueError:
+            training_type_label = str(training_type_value)
+
+        categories.append(
+            UserTrainingCategorySummary(
+                training_type=training_type_value,
+                training_type_label=training_type_label,
+                needs_improvement=counts["needs_improvement"],
+                achieved=counts["achieved"],
+                excellent=counts["excellent"],
+            )
+        )
+
+    return UserTrainingSummaryResponse(
+        user_id=user_id,
+        total_trainings_with_status=total_trainings_with_status,
+        categories=categories,
+    )
 
