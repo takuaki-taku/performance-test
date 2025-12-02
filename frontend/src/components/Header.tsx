@@ -90,7 +90,11 @@ const Header = () => {
                 </svg>
               </button>
               {isTrainingOpenDesktop && (
-                <div className="absolute right-0 mt-2 w-40 rounded-lg bg-white shadow-lg ring-1 ring-black/5 z-50">
+                <div 
+                  className="absolute right-0 mt-2 w-40 rounded-lg bg-white shadow-lg ring-1 ring-black/5 z-50"
+                  onMouseEnter={() => setIsTrainingOpenDesktop(true)}
+                  onMouseLeave={() => setIsTrainingOpenDesktop(false)}
+                >
                   <Link
                     href="/flexibility"
                     className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
@@ -120,6 +124,26 @@ const Header = () => {
                       <path d="M18 12h4" />
                     </svg>
                     <span>Core</span>
+                  </Link>
+                  <Link
+                    href="/warmup"
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="5" />
+                      <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24" />
+                    </svg>
+                    <span>Warmup</span>
+                  </Link>
+                  <Link
+                    href="/cooldown"
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="5" />
+                      <path d="M12 1v6m0 6v6M18.36 5.64l-4.24 4.24m-4.24 4.24l-4.24 4.24M23 12h-6m-6 0H1M18.36 18.36l-4.24-4.24m-4.24-4.24L5.64 5.64" />
+                    </svg>
+                    <span>Cooldown</span>
                   </Link>
                 </div>
               )}
@@ -247,6 +271,20 @@ const Header = () => {
                         <path d="M18 12h4" />
                       </svg>
                       <span>Core</span>
+                    </Link>
+                    <Link href="/warmup" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="5" />
+                        <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24" />
+                      </svg>
+                      <span>Warmup</span>
+                    </Link>
+                    <Link href="/cooldown" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="5" />
+                        <path d="M12 1v6m0 6v6M18.36 5.64l-4.24 4.24m-4.24 4.24l-4.24 4.24M23 12h-6m-6 0H1M18.36 18.36l-4.24-4.24m-4.24-4.24L5.64 5.64" />
+                      </svg>
+                      <span>Cooldown</span>
                     </Link>
                   </div>
                 )}
