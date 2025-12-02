@@ -125,6 +125,9 @@ class TrainingBase(BaseModel):
     image_path: Optional[str] = None
     description: str
     instructions: Optional[str] = None
+    series_name: Optional[str] = None  # シリーズ名（例: "クールダウン", "ウォームアップ"）
+    series_number: Optional[int] = None  # シリーズ番号（例: 1, 2）
+    page_number: Optional[int] = None  # PDF内のページ番号（シリーズ内での順序）
 
 
 class TrainingCreate(TrainingBase):

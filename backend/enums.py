@@ -25,6 +25,8 @@ class TrainingType(enum.Enum):
     CORE = 2  # コアトレーニング
     STRENGTH = 3  # 筋トレ
     LADDER = 4  # ラダートレーニング
+    WARMUP = 5  # ウォームアップ
+    COOLDOWN = 6  # クールダウン
 
 
 class AchievementLevel(enum.Enum):
