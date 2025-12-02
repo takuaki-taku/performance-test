@@ -110,6 +110,9 @@ class Training(Base):
     image_path = Column(String, nullable=True)  # 画像がある場合
     description = Column(String, nullable=False)
     instructions = Column(String, nullable=True)  # 実施方法の詳細
+    series_name = Column(String, nullable=True, index=True)  # シリーズ名（例: "クールダウン", "ウォームアップ"）
+    series_number = Column(Integer, nullable=True, index=True)  # シリーズ番号（例: 1, 2）
+    page_number = Column(Integer, nullable=True)  # PDF内のページ番号（シリーズ内での順序）
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow,
                         onupdate=datetime.datetime.utcnow)

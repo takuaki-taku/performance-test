@@ -4,9 +4,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Button, buttonVariants } from '@/components/ui/button';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isTrainingOpenDesktop, setIsTrainingOpenDesktop] = useState(false);
+  const [isTrainingOpenMobile, setIsTrainingOpenMobile] = useState(false);
   const router = useRouter();
 
   const goMyPage = () => {
@@ -40,7 +43,9 @@ const Header = () => {
               className="object-contain"
             />
             <span className="ml-2 text-2xl font-bold text-gray-800">
-              パフォーマンスDB | Performance Records
+              {/* 画面幅が狭いときは日本語のみ、md以上で日英両方を表示 */}
+              <span className="md:inline hidden">パフォーマンスDB | Performance Records</span>
+              <span className="md:hidden inline">パフォーマンスDB</span>
             </span>
           </Link>
           
@@ -50,37 +55,109 @@ const Header = () => {
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12l9-9 9 9"/><path d="M9 21V9h6v12"/></svg>
               <span>Home</span>
             </Link>
-            <Link href="/karte" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-              <span>Karte</span>
-            </Link>
-            <button onClick={goMyPage} type="button" className="flex items-center gap-2 text-blue-600 hover:text-blue-800 hover:underline bg-transparent p-0 focus:outline-none">
+            <Button
+              onClick={goMyPage}
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-2"
+            >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               <span>MyPage</span>
-            </button>
-            <Link href="/flexibility" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-              </svg>
-              <span>Stretch</span>
-            </Link>
-            <Link href="/core" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
-              <svg
-                className="w-5 h-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+            </Button>
+
+            {/* Training ドロップダウン（デスクトップ） */}
+            <div
+              className="relative"
+              onMouseEnter={() => setIsTrainingOpenDesktop(true)}
+              onMouseLeave={() => setIsTrainingOpenDesktop(false)}
+            >
+              <button
+                type="button"
+                className="flex items-center gap-1 text-gray-600 hover:text-gray-900"
               >
-                <circle cx="12" cy="12" r="3" />
-                <path d="M12 2v4" />
-                <path d="M12 18v4" />
-                <path d="M2 12h4" />
-                <path d="M18 12h4" />
-              </svg>
-              <span>Core</span>
+                <span>Training</span>
+                <svg
+                  className="w-4 h-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+              {isTrainingOpenDesktop && (
+                <div 
+                  className="absolute right-0 mt-2 w-40 rounded-lg bg-white shadow-lg ring-1 ring-black/5 z-50"
+                  onMouseEnter={() => setIsTrainingOpenDesktop(true)}
+                  onMouseLeave={() => setIsTrainingOpenDesktop(false)}
+                >
+                  <Link
+                    href="/flexibility"
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                    </svg>
+                    <span>Stretch</span>
+                  </Link>
+                  <Link
+                    href="/core"
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="3" />
+                      <path d="M12 2v4" />
+                      <path d="M12 18v4" />
+                      <path d="M2 12h4" />
+                      <path d="M18 12h4" />
+                    </svg>
+                    <span>Core</span>
+                  </Link>
+                  <Link
+                    href="/warmup"
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="5" />
+                      <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24" />
+                    </svg>
+                    <span>Warmup</span>
+                  </Link>
+                  <Link
+                    href="/cooldown"
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="5" />
+                      <path d="M12 1v6m0 6v6M18.36 5.64l-4.24 4.24m-4.24 4.24l-4.24 4.24M23 12h-6m-6 0H1M18.36 18.36l-4.24-4.24m-4.24-4.24L5.64 5.64" />
+                    </svg>
+                    <span>Cooldown</span>
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            <Link
+              href="/quickstart"
+              className={buttonVariants({
+                variant: 'ghost',
+                size: 'sm',
+              })}
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              <span>Quick Start</span>
             </Link>
             <Link href="/about" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
@@ -122,57 +199,117 @@ const Header = () => {
           </button>
         </div>
 
-        {/* モバイルメニュー */}
-        {isMenuOpen && (
-          <div className="md:hidden mt-4">
-            <div className="flex flex-col gap-4">
-              <Link href="/" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12l9-9 9 9"/><path d="M9 21V9h6v12"/></svg>
-                <span>Home</span>
-              </Link>
-              <Link href="/karte" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                <span>Karte</span>
-              </Link>
-                <button onClick={goMyPage} type="button" className="flex items-center gap-2 text-blue-600 hover:text-blue-800 hover:underline text-left bg-transparent p-0 focus:outline-none">
+          {/* モバイルメニュー */}
+          {isMenuOpen && (
+            <div className="md:hidden mt-4">
+              <div className="flex flex-col gap-4">
+                <Link href="/" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12l9-9 9 9"/><path d="M9 21V9h6v12"/></svg>
+                  <span>Home</span>
+                </Link>
+                <Button
+                  onClick={goMyPage}
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-2 justify-start"
+                >
                   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                   <span>MyPage</span>
+                </Button>
+
+                {/* Training アコーディオン（モバイル） */}
+                <button
+                  type="button"
+                  className="flex items-center justify-between text-gray-600 hover:text-gray-900"
+                  onClick={() => setIsTrainingOpenMobile((prev) => !prev)}
+                >
+                  <span className="flex items-center gap-2">
+                    <svg
+                      className="w-5 h-5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="3" />
+                      <path d="M12 2v4" />
+                      <path d="M12 18v4" />
+                      <path d="M2 12h4" />
+                      <path d="M18 12h4" />
+                    </svg>
+                    <span>Training</span>
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {isTrainingOpenMobile ? 'Hide ▲' : 'Show ▼'}
+                  </span>
                 </button>
-                <Link href="/flexibility" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                  </svg>
-                  <span>Stretch</span>
+                {isTrainingOpenMobile && (
+                  <div className="ml-6 flex flex-col gap-2">
+                    <Link href="/flexibility" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                      </svg>
+                      <span>Stretch</span>
+                    </Link>
+                    <Link href="/core" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+                      <svg
+                        className="w-4 h-4"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <circle cx="12" cy="12" r="3" />
+                        <path d="M12 2v4" />
+                        <path d="M12 18v4" />
+                        <path d="M2 12h4" />
+                        <path d="M18 12h4" />
+                      </svg>
+                      <span>Core</span>
+                    </Link>
+                    <Link href="/warmup" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="5" />
+                        <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24" />
+                      </svg>
+                      <span>Warmup</span>
+                    </Link>
+                    <Link href="/cooldown" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="5" />
+                        <path d="M12 1v6m0 6v6M18.36 5.64l-4.24 4.24m-4.24 4.24l-4.24 4.24M23 12h-6m-6 0H1M18.36 18.36l-4.24-4.24m-4.24-4.24L5.64 5.64" />
+                      </svg>
+                      <span>Cooldown</span>
+                    </Link>
+                  </div>
+                )}
+
+                <Link
+                  href="/quickstart"
+                  className={buttonVariants({
+                    variant: 'ghost',
+                    size: 'sm',
+                  })}
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                  <span>Quick Start</span>
                 </Link>
-                <Link href="/core" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
-                  <svg
-                    className="w-5 h-5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="12" cy="12" r="3" />
-                    <path d="M12 2v4" />
-                    <path d="M12 18v4" />
-                    <path d="M2 12h4" />
-                    <path d="M18 12h4" />
-                  </svg>
-                  <span>Core</span>
+                <Link href="/about" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                  <span>About</span>
                 </Link>
-              <Link href="/about" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-                <span>About</span>
-              </Link>
-              <Link href="/contact" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10v6a2 2 0 0 1-2 2H7l-4 4V6a2 2 0 0 1 2-2h7"/><path d="M21 4h-6"/><path d="M15 8l-2-2 2-2"/></svg>
-                <span>Contact</span>
-              </Link>
+                <Link href="/contact" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10v6a2 2 0 0 1-2 2H7l-4 4V6a2 2 0 0 1 2-2h7"/><path d="M21 4h-6"/><path d="M15 8l-2-2 2-2"/></svg>
+                  <span>Contact</span>
+                </Link>
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </nav>
     </header>
   );
