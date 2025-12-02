@@ -10,6 +10,8 @@ import { useUserTrainingResults, UserTrainingResultWithTraining } from '@/hooks/
 import { useCoreTrainings, useFlexibilityChecks } from '@/hooks/useFlexibilityChecks';
 import { Training, TrainingType } from '@/types/flexibility';
 import { useUserTrainingSummary } from '@/hooks/useUserTrainingSummary';
+import TutorialTour, { TourStep } from '@/components/TutorialTour';
+import { Button } from '@/components/ui/button';
 
 type UserResult = {
   id: number;
@@ -61,11 +63,67 @@ export default function MyPageContent({ userId }: MyPageContentProps) {
   const [inProgressList, setInProgressList] = useState<InProgressTraining[]>([]);
   const [recentTrainings, setRecentTrainings] = useState<RecentTraining[]>([]);
   const [openKarteSection, setOpenKarteSection] = useState<"needsImprovement" | "achieved" | "excellent" | null>("needsImprovement");
+  const [tourRunning, setTourRunning] = useState<boolean>(false);
 
   const apiBase = useMemo(
     () => process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000',
     []
   );
+
+  // チュートリアルツアーのステップ定義
+  const tourSteps: TourStep[] = useMemo(() => [
+    {
+      target: '[data-tour="user-name"]',
+      title: 'あなたの名前',
+      content: 'ここにあなたの名前が表示されます。プロフィール情報はこのセクションで確認できます。',
+      position: 'bottom',
+    },
+    {
+      target: '[data-tour="training-stats"]',
+      title: 'トレーニング統計',
+      content: 'ここでは、あなたのトレーニングの進捗状況や記録を確認できます。完了したトレーニング数や評価状況が表示されます。',
+      position: 'bottom',
+    },
+    {
+      target: '[data-tour="training-karte"]',
+      title: 'トレーニングカード',
+      content: 'ここでは、評価済みのトレーニングを確認できます。「Needs improvement」「Achieved」「Excellent」の3つのカテゴリで整理されています。',
+      position: 'top',
+    },
+    {
+      target: '[data-tour="physical-test-results"]',
+      title: 'パフォーマンステスト結果',
+      content: 'ここから、過去のパフォーマンステストの結果を確認できます。記録されたテスト結果の詳細を閲覧できます。',
+      position: 'top',
+    },
+  ], []);
+
+  // 初回訪問時にツアーを開始するかチェック
+  useEffect(() => {
+    const hasSeenTour = localStorage.getItem('hasSeenMyPageTour');
+    if (!hasSeenTour && isAuthenticated) {
+      // 少し遅延させてからツアーを開始（ページが完全に読み込まれた後）
+      const timer = setTimeout(() => {
+        setTourRunning(true);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated]);
+
+  const handleTourComplete = () => {
+    localStorage.setItem('hasSeenMyPageTour', 'true');
+    setTourRunning(false);
+  };
+
+  const handleTourSkip = () => {
+    localStorage.setItem('hasSeenMyPageTour', 'true');
+    setTourRunning(false);
+  };
+
+  const handleStartTour = () => {
+    localStorage.removeItem('hasSeenMyPageTour');
+    setTourRunning(true);
+  };
 
   // ---- Karte data hooks ----
   const { results, loading: resultsLoading, error: resultsError } = useUserTrainingResults(userId);
@@ -317,15 +375,56 @@ export default function MyPageContent({ userId }: MyPageContentProps) {
 
   return (
     <Container>
+      <TutorialTour
+        steps={tourSteps}
+        isActive={isAuthenticated === true}
+        onComplete={handleTourComplete}
+        onSkip={handleTourSkip}
+        run={tourRunning}
+      />
       <div className="max-w-5xl mx-auto">
         {/* Title Section */}
         <section className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-extrabold">Welcome, {userName}</h1>
-          <p className="text-gray-600 mt-2">Your personal training dashboard</p>
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-extrabold" data-tour="user-name">
+                Welcome, {userName}
+              </h1>
+              <p className="text-gray-600 mt-2">Your personal training dashboard</p>
+            </div>
+            <Button
+              onClick={handleStartTour}
+              variant="primary"
+              size="md"
+              title="チュートリアルツアーを開始"
+              className="flex items-center gap-2"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              ツアーを開始
+            </Button>
+          </div>
         </section>
 
         {/* Stats Section */}
-        <section>
+        <section data-tour="training-stats">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
               <div className="flex items-center justify-between">
@@ -416,7 +515,7 @@ export default function MyPageContent({ userId }: MyPageContentProps) {
         </section>
 
         {/* Training Karte Section (from Karte page) */}
-        <section className="mt-10">
+        <section className="mt-10" data-tour="training-karte">
           <h2 className="text-xl font-bold mb-4">Training Karte</h2>
           <p className="mb-2 text-sm text-gray-600">
             Trainings with recorded status: <span className="font-semibold">{totalWithStatus}</span>
@@ -429,14 +528,16 @@ export default function MyPageContent({ userId }: MyPageContentProps) {
             <div className="space-y-4">
               {/* Needs improvement */}
               <div className="space-y-2">
-                <button
+                <Button
                   type="button"
                   onClick={() =>
                     setOpenKarteSection((prev) =>
                       prev === "needsImprovement" ? null : "needsImprovement"
                     )
                   }
-                  className="flex w-full items-center justify-between rounded-2xl bg-gray-100 px-4 py-3 text-left text-sm font-semibold text-gray-800 hover:bg-gray-200"
+                  variant="muted"
+                  size="md"
+                  className="w-full"
                 >
                   <span>
                     Needs improvement
@@ -447,7 +548,7 @@ export default function MyPageContent({ userId }: MyPageContentProps) {
                   <span className="text-xs text-gray-500">
                     {openKarteSection === "needsImprovement" ? "Hide ▲" : "Show ▼"}
                   </span>
-                </button>
+                </Button>
                 {openKarteSection === "needsImprovement" && (
                   <KarteSectionTable rows={needsImprovementRows} />
                 )}
@@ -455,14 +556,16 @@ export default function MyPageContent({ userId }: MyPageContentProps) {
 
               {/* Achieved */}
               <div className="space-y-2">
-                <button
+                <Button
                   type="button"
                   onClick={() =>
                     setOpenKarteSection((prev) =>
                       prev === "achieved" ? null : "achieved"
                     )
                   }
-                  className="flex w-full items-center justify-between rounded-2xl bg-gray-100 px-4 py-3 text-left text-sm font-semibold text-gray-800 hover:bg-gray-200"
+                  variant="muted"
+                  size="md"
+                  className="w-full"
                 >
                   <span>
                     Achieved
@@ -473,7 +576,7 @@ export default function MyPageContent({ userId }: MyPageContentProps) {
                   <span className="text-xs text-gray-500">
                     {openKarteSection === "achieved" ? "Hide ▲" : "Show ▼"}
                   </span>
-                </button>
+                </Button>
                 {openKarteSection === "achieved" && (
                   <KarteSectionTable rows={achievedRows} />
                 )}
@@ -481,14 +584,16 @@ export default function MyPageContent({ userId }: MyPageContentProps) {
 
               {/* Excellent */}
               <div className="space-y-2">
-                <button
+                <Button
                   type="button"
                   onClick={() =>
                     setOpenKarteSection((prev) =>
                       prev === "excellent" ? null : "excellent"
                     )
                   }
-                  className="flex w-full items-center justify-between rounded-2xl bg-gray-100 px-4 py-3 text-left text-sm font-semibold text-gray-800 hover:bg-gray-200"
+                  variant="muted"
+                  size="md"
+                  className="w-full"
                 >
                   <span>
                     Excellent
@@ -499,7 +604,7 @@ export default function MyPageContent({ userId }: MyPageContentProps) {
                   <span className="text-xs text-gray-500">
                     {openKarteSection === "excellent" ? "Hide ▲" : "Show ▼"}
                   </span>
-                </button>
+                </Button>
                 {openKarteSection === "excellent" && (
                   <KarteSectionTable rows={excellentRows} />
                 )}
@@ -544,6 +649,7 @@ export default function MyPageContent({ userId }: MyPageContentProps) {
               <Link
                 href={`/physical-test-results/${userId}`}
                 className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100 hover:shadow-md transition block"
+                data-tour="physical-test-results"
               >
                 <div className="flex items-center gap-3">
                   <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-blue-50 text-blue-600">
