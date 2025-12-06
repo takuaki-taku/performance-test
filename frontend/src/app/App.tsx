@@ -8,6 +8,7 @@ import ResultList from '../components/ResultList';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { Result } from '@/types/Result';
+import { showToast } from '@/components/common/Toast';
 
 function App() {
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -31,7 +32,7 @@ function App() {
                     setSelectedUserName(response.data.name);
                 } catch (error: unknown) {
                     console.error(error);
-                    alert('Failed to create user.');
+                    showToast('データの取得に失敗しました', 'error');
                 }
             } else {
                 setUserResults([]);

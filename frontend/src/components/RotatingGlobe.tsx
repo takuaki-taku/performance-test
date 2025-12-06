@@ -43,7 +43,7 @@ function Globe() {
   return (
     <mesh
       ref={ref}
-      onClick={() => router.push('/flexibility')}
+      onClick={() => router.push('/training/flexibility')}
       onPointerOver={() => (document.body.style.cursor = 'pointer')}
       onPointerOut={() => (document.body.style.cursor = 'auto')}
     >

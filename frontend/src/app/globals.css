@@ -29,3 +29,19 @@ body {
 button:not(.btn) {
   border-radius: 0.5rem !important; /* rounded-lg の値 */
 }
+
+/* ページ遷移アニメーション */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: fadeIn 0.3s ease-out;
+}
