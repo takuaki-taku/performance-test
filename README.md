@@ -116,9 +116,14 @@ Perf_test/
 
 5.  **Run the application:**
 
+    **重要**: プロジェクトルートディレクトリから起動してください。
+
     ```bash
-    uvicorn backend.main:app --reload
+    # プロジェクトルート（Perf_test/）から実行
+    python3 -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
     ```
+
+    **注意**: `backend/` ディレクトリ内から `uvicorn main:app` を実行すると、相対インポートエラーが発生します。必ずプロジェクトルートから起動してください。
 
     The backend will be accessible at `http://localhost:8000`.
 
