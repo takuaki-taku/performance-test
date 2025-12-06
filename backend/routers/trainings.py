@@ -10,6 +10,9 @@ from ..schemas import (
     UserTrainingResultWithTraining,
     UserTrainingSummaryResponse,
     UserTrainingCategorySummary,
+    TrainingFeedbackMessageCreate,
+    TrainingFeedbackMessageRead,
+    TrainingFeedbackMessageUpdate,
 )
 from typing import List, Optional, Dict
 from ..enums import TrainingType, AchievementLevel
@@ -19,10 +22,7 @@ router = APIRouter()
 
 
 @router.get("/trainings/", response_model=List[TrainingRead])
-def read_trainings(
-    training_type: Optional[int] = None,
-    db: Session = Depends(get_db)
-):
+def read_trainings(training_type: Optional[int] = None, db: Session = Depends(get_db)):
     """全トレーニングを取得（training_typeでフィルタリング可能）"""
     query = db.query(models.Training)
     if training_type is not None:
@@ -34,11 +34,11 @@ def read_trainings(
 @router.get("/trainings/{training_id}", response_model=TrainingRead)
 def read_training(training_id: int, db: Session = Depends(get_db)):
     """特定のトレーニングを取得"""
-    training = db.query(models.Training).filter(
-        models.Training.id == training_id).first()
+    training = (
+        db.query(models.Training).filter(models.Training.id == training_id).first()
+    )
     if training is None:
-        raise HTTPException(
-            status_code=404, detail="Training not found")
+        raise HTTPException(status_code=404, detail="Training not found")
     return training
 
 
@@ -51,9 +51,9 @@ def create_training(training: TrainingCreate, db: Session = Depends(get_db)):
     except ValueError:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid training_type: {training.training_type}. Valid values: {[e.value for e in TrainingType]}"
+            detail=f"Invalid training_type: {training.training_type}. Valid values: {[e.value for e in TrainingType]}",
         )
-    
+
     db_training = models.Training(**training.model_dump())
     db.add(db_training)
     db.commit()
@@ -63,17 +63,15 @@ def create_training(training: TrainingCreate, db: Session = Depends(get_db)):
 
 @router.put("/trainings/{training_id}", response_model=TrainingRead)
 def update_training(
-    training_id: int,
-    training: TrainingCreate,
-    db: Session = Depends(get_db)
+    training_id: int, training: TrainingCreate, db: Session = Depends(get_db)
 ):
     """トレーニングを更新"""
-    db_training = db.query(models.Training).filter(
-        models.Training.id == training_id).first()
+    db_training = (
+        db.query(models.Training).filter(models.Training.id == training_id).first()
+    )
     if db_training is None:
-        raise HTTPException(
-            status_code=404, detail="Training not found")
-    
+        raise HTTPException(status_code=404, detail="Training not found")
+
     # training_typeのバリデーション
     if training.training_type is not None:
         try:
@@ -81,9 +79,9 @@ def update_training(
         except ValueError:
             raise HTTPException(
                 status_code=400,
-                detail=f"Invalid training_type: {training.training_type}. Valid values: {[e.value for e in TrainingType]}"
+                detail=f"Invalid training_type: {training.training_type}. Valid values: {[e.value for e in TrainingType]}",
             )
-    
+
     for key, value in training.model_dump().items():
         setattr(db_training, key, value)
     db.commit()
@@ -94,11 +92,11 @@ def update_training(
 @router.delete("/trainings/{training_id}")
 def delete_training(training_id: int, db: Session = Depends(get_db)):
     """トレーニングを削除"""
-    db_training = db.query(models.Training).filter(
-        models.Training.id == training_id).first()
+    db_training = (
+        db.query(models.Training).filter(models.Training.id == training_id).first()
+    )
     if db_training is None:
-        raise HTTPException(
-            status_code=404, detail="Training not found")
+        raise HTTPException(status_code=404, detail="Training not found")
     db.delete(db_training)
     db.commit()
     return {"message": "Training deleted successfully"}
@@ -106,10 +104,10 @@ def delete_training(training_id: int, db: Session = Depends(get_db)):
 
 # ユーザーのトレーニング結果関連のエンドポイント
 
+
 @router.post("/user-training-results/", response_model=UserTrainingResultRead)
 def create_user_training_result(
-    result: UserTrainingResultCreate,
-    db: Session = Depends(get_db)
+    result: UserTrainingResultCreate, db: Session = Depends(get_db)
 ):
     """ユーザーのトレーニング結果を作成"""
     # achievement_levelのバリデーション
@@ -118,20 +116,22 @@ def create_user_training_result(
     except ValueError:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid achievement_level: {result.achievement_level}. Valid values: {[e.value for e in AchievementLevel]}"
+            detail=f"Invalid achievement_level: {result.achievement_level}. Valid values: {[e.value for e in AchievementLevel]}",
         )
-    
+
     # ユーザーとトレーニングの存在確認
-    user = db.query(models.User).filter(
-        models.User.id == result.user_id).first()
+    user = db.query(models.User).filter(models.User.id == result.user_id).first()
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    
-    training = db.query(models.Training).filter(
-        models.Training.id == result.training_id).first()
+
+    training = (
+        db.query(models.Training)
+        .filter(models.Training.id == result.training_id)
+        .first()
+    )
     if training is None:
         raise HTTPException(status_code=404, detail="Training not found")
-    
+
     db_result = models.UserTrainingResult(**result.model_dump())
     db.add(db_result)
     db.commit()
@@ -139,53 +139,40 @@ def create_user_training_result(
     return db_result
 
 
-@router.get("/user-training-results/{user_id}", response_model=List[UserTrainingResultWithTraining])
+@router.get(
+    "/user-training-results/{user_id}",
+    response_model=List[UserTrainingResultWithTraining],
+)
 def read_user_training_results(
-    user_id: str,
-    training_type: int = None,
-    db: Session = Depends(get_db)
+    user_id: str, training_type: int = None, db: Session = Depends(get_db)
 ):
     """ユーザーのトレーニング結果を取得"""
     query = db.query(models.UserTrainingResult).filter(
         models.UserTrainingResult.user_id == user_id
     )
-    
+
     if training_type is not None:
         query = query.join(models.Training).filter(
             models.Training.training_type == training_type
         )
-    
+
     results = query.order_by(models.UserTrainingResult.date.desc()).all()
-    return results
-
-
-@router.get("/user-training-results/{user_id}/{training_id}", response_model=List[UserTrainingResultRead])
-def read_user_training_result_by_training(
-    user_id: str,
-    training_id: int,
-    db: Session = Depends(get_db)
-):
-    """特定のトレーニングのユーザー結果を取得"""
-    results = db.query(models.UserTrainingResult).filter(
-        models.UserTrainingResult.user_id == user_id,
-        models.UserTrainingResult.training_id == training_id
-    ).order_by(models.UserTrainingResult.date.desc()).all()
     return results
 
 
 @router.put("/user-training-results/{result_id}", response_model=UserTrainingResultRead)
 def update_user_training_result(
-    result_id: int,
-    result: UserTrainingResultCreate,
-    db: Session = Depends(get_db)
+    result_id: int, result: UserTrainingResultCreate, db: Session = Depends(get_db)
 ):
     """ユーザーのトレーニング結果を更新"""
-    db_result = db.query(models.UserTrainingResult).filter(
-        models.UserTrainingResult.id == result_id).first()
+    db_result = (
+        db.query(models.UserTrainingResult)
+        .filter(models.UserTrainingResult.id == result_id)
+        .first()
+    )
     if db_result is None:
-        raise HTTPException(
-            status_code=404, detail="User training result not found")
-    
+        raise HTTPException(status_code=404, detail="User training result not found")
+
     # achievement_levelのバリデーション
     if result.achievement_level is not None:
         try:
@@ -193,9 +180,9 @@ def update_user_training_result(
         except ValueError:
             raise HTTPException(
                 status_code=400,
-                detail=f"Invalid achievement_level: {result.achievement_level}. Valid values: {[e.value for e in AchievementLevel]}"
+                detail=f"Invalid achievement_level: {result.achievement_level}. Valid values: {[e.value for e in AchievementLevel]}",
             )
-    
+
     for key, value in result.model_dump().items():
         setattr(db_result, key, value)
     db.commit()
@@ -206,11 +193,13 @@ def update_user_training_result(
 @router.delete("/user-training-results/{result_id}")
 def delete_user_training_result(result_id: int, db: Session = Depends(get_db)):
     """ユーザーのトレーニング結果を削除"""
-    db_result = db.query(models.UserTrainingResult).filter(
-        models.UserTrainingResult.id == result_id).first()
+    db_result = (
+        db.query(models.UserTrainingResult)
+        .filter(models.UserTrainingResult.id == result_id)
+        .first()
+    )
     if db_result is None:
-        raise HTTPException(
-            status_code=404, detail="User training result not found")
+        raise HTTPException(status_code=404, detail="User training result not found")
     db.delete(db_result)
     db.commit()
     return {"message": "User training result deleted successfully"}
@@ -307,3 +296,152 @@ def read_user_training_summary(
         categories=categories,
     )
 
+
+# フィードバックメッセージ関連のエンドポイント
+# 注意: より具体的なパス（リテラル部分が多い）を先に定義する必要がある
+
+
+@router.get(
+    "/user-training-results/{result_id}/feedback-messages",
+    response_model=List[TrainingFeedbackMessageRead],
+)
+def get_feedback_messages(
+    result_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
+):
+    """トレーニング結果に紐づくフィードバックメッセージ一覧を取得"""
+    # トレーニング結果の存在確認
+    training_result = (
+        db.query(models.UserTrainingResult)
+        .filter(models.UserTrainingResult.id == result_id)
+        .first()
+    )
+    if training_result is None:
+        raise HTTPException(status_code=404, detail="User training result not found")
+
+    messages = (
+        db.query(models.TrainingFeedbackMessage)
+        .filter(models.TrainingFeedbackMessage.user_training_result_id == result_id)
+        .order_by(models.TrainingFeedbackMessage.created_at.asc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+    return messages
+
+
+@router.get(
+    "/user-training-results/{user_id}/{training_id}",
+    response_model=List[UserTrainingResultRead],
+)
+def read_user_training_result_by_training(
+    user_id: str, training_id: int, db: Session = Depends(get_db)
+):
+    """特定のトレーニングのユーザー結果を取得"""
+    results = (
+        db.query(models.UserTrainingResult)
+        .filter(
+            models.UserTrainingResult.user_id == user_id,
+            models.UserTrainingResult.training_id == training_id,
+        )
+        .order_by(models.UserTrainingResult.date.desc())
+        .all()
+    )
+    return results
+
+
+@router.post("/training-feedback-messages/", response_model=TrainingFeedbackMessageRead)
+def create_feedback_message(
+    message: TrainingFeedbackMessageCreate, db: Session = Depends(get_db)
+):
+    """フィードバックメッセージを作成"""
+    # トレーニング結果の存在確認
+    training_result = (
+        db.query(models.UserTrainingResult)
+        .filter(models.UserTrainingResult.id == message.user_training_result_id)
+        .first()
+    )
+    if training_result is None:
+        raise HTTPException(status_code=404, detail="User training result not found")
+
+    # 送信者の存在確認
+    sender = db.query(models.User).filter(models.User.id == message.sender_id).first()
+    if sender is None:
+        raise HTTPException(status_code=404, detail="Sender not found")
+
+    # 送信者タイプとsender_idの整合性チェック
+    # ユーザーの場合、training_resultのuser_idと一致する必要がある
+    if message.sender_type == "user" and message.sender_id != training_result.user_id:
+        raise HTTPException(
+            status_code=403,
+            detail="User can only send messages for their own training results",
+        )
+
+    db_message = models.TrainingFeedbackMessage(
+        user_training_result_id=message.user_training_result_id,
+        sender_type=message.sender_type,
+        sender_id=message.sender_id,
+        message=message.message,
+        message_type=message.message_type,
+    )
+
+    db.add(db_message)
+    db.commit()
+    db.refresh(db_message)
+    return db_message
+
+
+@router.put(
+    "/training-feedback-messages/{message_id}/read",
+    response_model=TrainingFeedbackMessageRead,
+)
+def mark_message_as_read(
+    message_id: int,
+    update: TrainingFeedbackMessageUpdate,
+    db: Session = Depends(get_db),
+):
+    """メッセージを既読にする"""
+    db_message = (
+        db.query(models.TrainingFeedbackMessage)
+        .filter(models.TrainingFeedbackMessage.id == message_id)
+        .first()
+    )
+    if db_message is None:
+        raise HTTPException(status_code=404, detail="Feedback message not found")
+
+    if update.read_at is not None:
+        db_message.read_at = update.read_at
+    if update.read_by is not None:
+        db_message.read_by = update.read_by
+
+    db.commit()
+    db.refresh(db_message)
+    return db_message
+
+
+@router.get("/users/{user_id}/unread-feedback-count", response_model=Dict[str, int])
+def get_unread_feedback_count(user_id: str, db: Session = Depends(get_db)):
+    """ユーザーの未読フィードバックメッセージ数を取得"""
+    # ユーザーのトレーニング結果を取得
+    training_results = (
+        db.query(models.UserTrainingResult)
+        .filter(models.UserTrainingResult.user_id == user_id)
+        .all()
+    )
+
+    result_ids = [r.id for r in training_results]
+    if not result_ids:
+        return {"count": 0}
+
+    # コーチからの未読メッセージ数をカウント
+    unread_count = (
+        db.query(models.TrainingFeedbackMessage)
+        .filter(
+            models.TrainingFeedbackMessage.user_training_result_id.in_(result_ids),
+            models.TrainingFeedbackMessage.sender_type == "coach",
+            models.TrainingFeedbackMessage.read_at.is_(None),
+        )
+        .count()
+    )
+
+    return {"count": unread_count}

@@ -125,7 +125,9 @@ class TrainingBase(BaseModel):
     image_path: Optional[str] = None
     description: str
     instructions: Optional[str] = None
-    series_name: Optional[str] = None  # シリーズ名（例: "クールダウン", "ウォームアップ"）
+    series_name: Optional[str] = (
+        None  # シリーズ名（例: "クールダウン", "ウォームアップ"）
+    )
     series_number: Optional[int] = None  # シリーズ番号（例: 1, 2）
     page_number: Optional[int] = None  # PDF内のページ番号（シリーズ内での順序）
 
@@ -166,6 +168,7 @@ class UserTrainingResultRead(UserTrainingResultBase):
 
 class UserTrainingResultWithTraining(UserTrainingResultRead):
     """トレーニング情報を含む結果"""
+
     training: TrainingRead
 
     class Config:
@@ -194,6 +197,7 @@ class FlexibilityCheckRead(FlexibilityCheckBase):
 
 class UserTrainingCategorySummary(BaseModel):
     """ユーザーのカテゴリ別トレーニングサマリ"""
+
     training_type: int
     training_type_label: str
     needs_improvement: int
@@ -203,7 +207,46 @@ class UserTrainingCategorySummary(BaseModel):
 
 class UserTrainingSummaryResponse(BaseModel):
     """ユーザーのトレーニングサマリ（カテゴリ別集計）"""
+
     user_id: uuid.UUID
     total_trainings_with_status: int
     categories: List[UserTrainingCategorySummary]
 
+
+# フィードバックメッセージ関連のスキーマ
+class TrainingFeedbackMessageBase(BaseModel):
+    """フィードバックメッセージの基本スキーマ"""
+
+    user_training_result_id: int
+    sender_type: str = Field(..., pattern="^(user|coach)$")  # "user" or "coach"
+    message: str = Field(..., min_length=1, max_length=2000)
+    message_type: str = Field(
+        default="text", pattern="^(text|question|feedback|progress|answer)$"
+    )
+
+
+class TrainingFeedbackMessageCreate(TrainingFeedbackMessageBase):
+    """フィードバックメッセージ作成用スキーマ"""
+
+    sender_id: uuid.UUID  # 送信者のID
+
+
+class TrainingFeedbackMessageRead(TrainingFeedbackMessageBase):
+    """フィードバックメッセージ読み取り用スキーマ"""
+
+    id: int
+    sender_id: uuid.UUID
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+    read_at: Optional[datetime.datetime] = None
+    read_by: Optional[uuid.UUID] = None
+
+    class Config:
+        from_attributes = True
+
+
+class TrainingFeedbackMessageUpdate(BaseModel):
+    """フィードバックメッセージ更新用スキーマ（既読マーク用）"""
+
+    read_at: Optional[datetime.datetime] = None
+    read_by: Optional[uuid.UUID] = None

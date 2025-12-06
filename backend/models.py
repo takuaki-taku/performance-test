@@ -1,6 +1,18 @@
 import datetime
 import uuid
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float, DateTime, Enum, TypeDecorator
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    ForeignKey,
+    Date,
+    Float,
+    DateTime,
+    Enum,
+    TypeDecorator,
+    Text,
+    Index,
+)
 from sqlalchemy.dialects.postgresql import UUID as PostgresUUID
 from sqlalchemy.orm import relationship
 from .db import Base
@@ -11,11 +23,12 @@ class GUID(TypeDecorator):
     """Platform-independent GUID type.
     Uses PostgreSQL's UUID type, otherwise uses TEXT.
     """
+
     impl = String
     cache_ok = True
 
     def load_dialect_impl(self, dialect):
-        if dialect.name == 'postgresql':
+        if dialect.name == "postgresql":
             return dialect.type_descriptor(PostgresUUID(as_uuid=True))
         else:
             return dialect.type_descriptor(String(36))
@@ -23,7 +36,7 @@ class GUID(TypeDecorator):
     def process_bind_param(self, value, dialect):
         if value is None:
             return value
-        elif dialect.name == 'postgresql':
+        elif dialect.name == "postgresql":
             # PostgreSQLはUUID型を直接受け取る
             return value
         else:
@@ -35,7 +48,7 @@ class GUID(TypeDecorator):
     def process_result_value(self, value, dialect):
         if value is None:
             return value
-        elif dialect.name == 'postgresql':
+        elif dialect.name == "postgresql":
             # PostgreSQLはUUID型を直接返す
             if not isinstance(value, uuid.UUID):
                 return uuid.UUID(value) if value else None
@@ -62,8 +75,7 @@ class UserResult(Base):
     __tablename__ = "user_results"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(GUID(), ForeignKey("users.id"),
-                     index=True, nullable=False)
+    user_id = Column(GUID(), ForeignKey("users.id"), index=True, nullable=False)
     date = Column(Date, nullable=False)
     long_jump_cm = Column(Float, nullable=False)
     fifty_meter_run_ms = Column(Float, nullable=False)
@@ -103,6 +115,7 @@ class MaxData(Base):
 
 class Training(Base):
     """トレーニング項目マスタ（ストレッチ、コア、筋トレ、ラダーなど）"""
+
     __tablename__ = "trainings"
     id = Column(Integer, primary_key=True, index=True)
     training_type = Column(Integer, nullable=False, index=True)  # TrainingType Enum
@@ -110,30 +123,101 @@ class Training(Base):
     image_path = Column(String, nullable=True)  # 画像がある場合
     description = Column(String, nullable=False)
     instructions = Column(String, nullable=True)  # 実施方法の詳細
-    series_name = Column(String, nullable=True, index=True)  # シリーズ名（例: "クールダウン", "ウォームアップ"）
-    series_number = Column(Integer, nullable=True, index=True)  # シリーズ番号（例: 1, 2）
-    page_number = Column(Integer, nullable=True)  # PDF内のページ番号（シリーズ内での順序）
+    series_name = Column(
+        String, nullable=True, index=True
+    )  # シリーズ名（例: "クールダウン", "ウォームアップ"）
+    series_number = Column(
+        Integer, nullable=True, index=True
+    )  # シリーズ番号（例: 1, 2）
+    page_number = Column(
+        Integer, nullable=True
+    )  # PDF内のページ番号（シリーズ内での順序）
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.datetime.utcnow,
-                        onupdate=datetime.datetime.utcnow)
+    updated_at = Column(
+        DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+    )
     results = relationship("UserTrainingResult", back_populates="training")
 
 
 class UserTrainingResult(Base):
     """ユーザーのトレーニング実施結果"""
+
     __tablename__ = "user_training_results"
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(GUID(), ForeignKey("users.id"), index=True, nullable=False)
-    training_id = Column(Integer, ForeignKey("trainings.id"), nullable=False, index=True)
+    training_id = Column(
+        Integer, ForeignKey("trainings.id"), nullable=False, index=True
+    )
     date = Column(Date, nullable=False, index=True)
     achievement_level = Column(Integer, nullable=False)  # AchievementLevel Enum (1-3)
-    comment = Column(String, nullable=True)  # コメント/フィードバック
+    comment = Column(
+        String, nullable=True
+    )  # コメント/フィードバック（後方互換性のため残す）
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.datetime.utcnow,
-                        onupdate=datetime.datetime.utcnow)
-    
+    updated_at = Column(
+        DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+    )
+
     user = relationship("User", back_populates="training_results")
     training = relationship("Training", back_populates="results")
+    feedback_messages = relationship(
+        "TrainingFeedbackMessage",
+        back_populates="training_result",
+        order_by="TrainingFeedbackMessage.created_at",
+        cascade="all, delete-orphan",
+    )
+
+
+class TrainingFeedbackMessage(Base):
+    """トレーニングごとのフィードバックメッセージ（チャット形式）"""
+
+    __tablename__ = "training_feedback_messages"
+    id = Column(Integer, primary_key=True, index=True)
+    user_training_result_id = Column(
+        Integer,
+        ForeignKey("user_training_results.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+
+    # 送信者情報
+    sender_type = Column(String, nullable=False, index=True)  # "user" or "coach"
+    sender_id = Column(GUID(), ForeignKey("users.id"), nullable=False, index=True)
+
+    # メッセージ内容
+    message = Column(Text, nullable=False)  # メッセージ本文
+    message_type = Column(
+        String, nullable=False, default="text"
+    )  # "text", "question", "feedback", "progress", "answer"
+
+    # メタデータ
+    created_at = Column(
+        DateTime, default=datetime.datetime.utcnow, nullable=False, index=True
+    )
+    updated_at = Column(
+        DateTime,
+        default=datetime.datetime.utcnow,
+        onupdate=datetime.datetime.utcnow,
+    )
+
+    # 既読管理
+    read_at = Column(DateTime, nullable=True)
+    read_by = Column(GUID(), ForeignKey("users.id"), nullable=True)
+
+    # リレーション
+    training_result = relationship(
+        "UserTrainingResult", back_populates="feedback_messages"
+    )
+    sender = relationship("User", foreign_keys=[sender_id])
+    reader = relationship("User", foreign_keys=[read_by])
+
+    # 複合インデックス（高速なクエリのため）
+    __table_args__ = (
+        Index("idx_feedback_result_created", "user_training_result_id", "created_at"),
+        Index(
+            "idx_feedback_unread", "user_training_result_id", "sender_type", "read_at"
+        ),
+    )
 
 
 # 後方互換性のため、FlexibilityCheckは残しておく（将来的に削除予定）
@@ -144,5 +228,6 @@ class FlexibilityCheck(Base):
     image_path = Column(String, nullable=False)
     description = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.datetime.utcnow,
-                        onupdate=datetime.datetime.utcnow)
+    updated_at = Column(
+        DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+    )
