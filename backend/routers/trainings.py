@@ -140,6 +140,26 @@ def create_user_training_result(
 
 
 @router.get(
+    "/user-training-results/{user_id}/{training_id}",
+    response_model=List[UserTrainingResultRead],
+)
+def read_user_training_result_by_training(
+    user_id: str, training_id: int, db: Session = Depends(get_db)
+):
+    """特定のトレーニングのユーザー結果を取得"""
+    results = (
+        db.query(models.UserTrainingResult)
+        .filter(
+            models.UserTrainingResult.user_id == user_id,
+            models.UserTrainingResult.training_id == training_id,
+        )
+        .order_by(models.UserTrainingResult.date.desc())
+        .all()
+    )
+    return results
+
+
+@router.get(
     "/user-training-results/{user_id}",
     response_model=List[UserTrainingResultWithTraining],
 )
@@ -328,26 +348,6 @@ def get_feedback_messages(
     )
 
     return messages
-
-
-@router.get(
-    "/user-training-results/{user_id}/{training_id}",
-    response_model=List[UserTrainingResultRead],
-)
-def read_user_training_result_by_training(
-    user_id: str, training_id: int, db: Session = Depends(get_db)
-):
-    """特定のトレーニングのユーザー結果を取得"""
-    results = (
-        db.query(models.UserTrainingResult)
-        .filter(
-            models.UserTrainingResult.user_id == user_id,
-            models.UserTrainingResult.training_id == training_id,
-        )
-        .order_by(models.UserTrainingResult.date.desc())
-        .all()
-    )
-    return results
 
 
 @router.post("/training-feedback-messages/", response_model=TrainingFeedbackMessageRead)
