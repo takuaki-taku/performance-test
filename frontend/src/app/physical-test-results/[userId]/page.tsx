@@ -1,25 +1,23 @@
-"use client";
+'use client';
 
-import React from 'react';
-import { useParams } from 'next/navigation';
-import PhysicalTestResults from '@/app/PhysicalTestResults';
 import { useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 
-export default function PhysicalTestResultsPage() {
-    const params = useParams();
-    const userId = params.userId as string; // UUID文字列として扱う
-    
-    useEffect(() => {
-        if (userId) {
-            try {
-                localStorage.setItem('userId', userId);
-            } catch {}
-        }
-    }, [userId]);
+export default function PhysicalTestResultsRedirectPage() {
+  const router = useRouter();
+  const params = useParams();
+  const userId = params.userId as string;
 
-    return (
-        <div>
-            <PhysicalTestResults userId={userId} />
-        </div>
-    );
+  useEffect(() => {
+    if (userId) {
+      router.replace(`/admin/physical-test-results/${userId}`);
+    }
+  }, [router, userId]);
+
+  return (
+    <div className="flex justify-center items-center min-h-screen">
+      リダイレクト中...
+    </div>
+  );
 }
+

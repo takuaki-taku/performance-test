@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { apiClient } from '@/utils/apiClient';
 import { Training, TrainingType } from '@/types/flexibility';
 
 /**
@@ -13,16 +13,18 @@ export const useFlexibilityChecks = () => {
 
   useEffect(() => {
     const fetchChecks = async () => {
+      setLoading(true);
+      setError(null);
       try {
         const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
         // 新しいtrainings APIを使用（training_type=1でフィルタリング）
-        const response = await axios.get<Training[]>(
+        const response = await apiClient.get<Training[]>(
           `${apiBase}/trainings/?training_type=${TrainingType.FLEXIBILITY}`
         );
-        setChecks(response.data);
+        setChecks(response.data || []);
         setLoading(false);
-      } catch {
-        setError('柔軟性チェックのデータの取得に失敗しました');
+      } catch (err: any) {
+        setError(`柔軟性チェックのデータの取得に失敗しました: ${err.message || '不明なエラー'}`);
         setLoading(false);
       }
     };
@@ -42,14 +44,20 @@ export const useFlexibilityCheck = (id: string) => {
 
   useEffect(() => {
     const fetchCheck = async () => {
+      if (!id) {
+        setLoading(false);
+        return;
+      }
+      
+      setLoading(true);
+      setError(null);
       try {
         const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
-        // 新しいtrainings APIを使用
-        const response = await axios.get<Training>(`${apiBase}/trainings/${id}`);
+        const response = await apiClient.get<Training>(`${apiBase}/trainings/${id}`);
         setCheck(response.data);
         setLoading(false);
-      } catch {
-        setError('柔軟性チェックのデータの取得に失敗しました');
+      } catch (err: any) {
+        setError(`トレーニングデータの取得に失敗しました: ${err.message || '不明なエラー'}`);
         setLoading(false);
       }
     };
@@ -70,16 +78,18 @@ export const useCoreTrainings = () => {
 
   useEffect(() => {
     const fetchTrainings = async () => {
+      setLoading(true);
+      setError(null);
       try {
         const apiBase =
           process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
-        const response = await axios.get<Training[]>(
+        const response = await apiClient.get<Training[]>(
           `${apiBase}/trainings/?training_type=${TrainingType.CORE}`
         );
-        setTrainings(response.data);
+        setTrainings(response.data || []);
         setLoading(false);
-      } catch {
-        setError('体幹トレーニングのデータの取得に失敗しました');
+      } catch (err: any) {
+        setError(`体幹トレーニングのデータの取得に失敗しました: ${err.message || '不明なエラー'}`);
         setLoading(false);
       }
     };
@@ -101,12 +111,21 @@ export const useWarmupTrainings = () => {
 
   useEffect(() => {
     const fetchTrainings = async () => {
+      setLoading(true);
+      setError(null);
       try {
         const apiBase =
           process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
-        const response = await axios.get<Training[]>(
+        const response = await apiClient.get<Training[]>(
           `${apiBase}/trainings/?training_type=${TrainingType.WARMUP}`
         );
+        
+        if (!response.data || response.data.length === 0) {
+          setTrainings([]);
+          setLoading(false);
+          return;
+        }
+        
         // シリーズ番号とページ番号でソート
         const sorted = response.data.sort((a, b) => {
           if (a.series_number !== b.series_number) {
@@ -116,8 +135,8 @@ export const useWarmupTrainings = () => {
         });
         setTrainings(sorted);
         setLoading(false);
-      } catch {
-        setError('ウォームアップトレーニングのデータの取得に失敗しました');
+      } catch (err: any) {
+        setError(`ウォームアップトレーニングのデータの取得に失敗しました: ${err.message || '不明なエラー'}`);
         setLoading(false);
       }
     };
@@ -139,12 +158,21 @@ export const useCooldownTrainings = () => {
 
   useEffect(() => {
     const fetchTrainings = async () => {
+      setLoading(true);
+      setError(null);
       try {
         const apiBase =
           process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
-        const response = await axios.get<Training[]>(
+        const response = await apiClient.get<Training[]>(
           `${apiBase}/trainings/?training_type=${TrainingType.COOLDOWN}`
         );
+        
+        if (!response.data || response.data.length === 0) {
+          setTrainings([]);
+          setLoading(false);
+          return;
+        }
+        
         // シリーズ番号とページ番号でソート
         const sorted = response.data.sort((a, b) => {
           if (a.series_number !== b.series_number) {
@@ -154,8 +182,8 @@ export const useCooldownTrainings = () => {
         });
         setTrainings(sorted);
         setLoading(false);
-      } catch {
-        setError('クールダウントレーニングのデータの取得に失敗しました');
+      } catch (err: any) {
+        setError(`クールダウントレーニングのデータの取得に失敗しました: ${err.message || '不明なエラー'}`);
         setLoading(false);
       }
     };

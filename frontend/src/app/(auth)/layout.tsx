@@ -1,9 +1,8 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './globals.css';
-import './App.css'; // App.css をインポート
-import { ToastContainer } from '@/components/common/Toast';
+import '../globals.css';
+import '../App.css';
 
-export default function RootLayout({
+export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -12,10 +11,12 @@ export default function RootLayout({
     <html lang="en">
       <body className="app">
         <div className="flex flex-col min-h-screen">
-          {children}
+          <main className="flex-grow">
+            {children}
+          </main>
         </div>
-        <ToastContainer />
       </body>
     </html>
   );
 }
+

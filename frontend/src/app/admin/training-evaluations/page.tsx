@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
-import Container from '@/components/Container';
+import Container from '@/components/common/Container';
 import { useUserTrainingResults, UserTrainingResultWithTraining } from '@/hooks/useUserTrainingResults';
 import { useCoreTrainings, useFlexibilityChecks } from '@/hooks/useFlexibilityChecks';
 import { Training, TrainingType } from '@/types/flexibility';
