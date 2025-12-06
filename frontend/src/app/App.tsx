@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import UserForm from '../components/UserForm';
-import UserList from '../components/UserList';
-import ResultForm from '../components/ResultForm';
-import ResultList from '../components/ResultList';
+import UserForm from '../components/admin/UserForm';
+import UserList from '../components/admin/UserList';
+import ResultForm from '../components/admin/ResultForm';
+import ResultList from '../components/admin/ResultList';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { Result } from '@/types/Result';
