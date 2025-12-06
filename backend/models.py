@@ -202,7 +202,7 @@ class TrainingFeedbackMessage(Base):
 
     # 既読管理
     read_at = Column(DateTime, nullable=True)
-    read_by = Column(GUID(), ForeignKey("users.id"), nullable=True)
+    read_by = Column(GUID(), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
 
     # リレーション
     training_result = relationship(
