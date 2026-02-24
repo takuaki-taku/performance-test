@@ -93,6 +93,7 @@ interface Result {
     spider_ms: number;
     eight_shape_run_count: number;
     ball_throw_cm: number;
+    test_format?: number | null;
 }
 
 interface DisplayData extends AverageData {
@@ -137,12 +138,16 @@ function PhysicalTestResults({ userId }: PhysicalTestResultsProps) {
                             long_jump: result.long_jump_cm,
                             fifty_meter_run: result.fifty_meter_run_ms,
                             spider: result.spider_ms,
-                            ball_throw: result.ball_throw_cm
+                            ball_throw: result.ball_throw_cm,
+                            test_format: result.test_format
                         };
                     });
 
-                    console.log("Converted Results:", convertedResults); // 変換後のデータを確認
-                    setResults(convertedResults);
+                    console.log("Converted Results (All):", convertedResults);
+                    // 全国大会（test_format === 2）または未設定（null）のデータのみを抽出
+                    const nationalResults = convertedResults.filter((r: Result) => r.test_format === 2 || r.test_format == null);
+
+                    setResults(nationalResults);
                 } catch (error: unknown) {
                     console.error(error);
                     setResults([]);
