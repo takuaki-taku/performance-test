@@ -143,20 +143,17 @@ function PhysicalTestResults({ userId }: PhysicalTestResultsProps) {
 
                     console.log("Converted Results:", convertedResults); // 変換後のデータを確認
                     setResults(convertedResults);
-                    setUserName(response.data.name);
                 } catch (error: unknown) {
                     console.error(error);
                     setResults([]);
-                    setUserName(null);
                 }
             } else {
                 setResults([]);
-                setUserName(null);
             }
         };
         fetchUserResults();
     }, [userId]);
-    
+
     useEffect(() => {
         const fetchUserData = async () => {
             if (userId) {
@@ -164,10 +161,13 @@ function PhysicalTestResults({ userId }: PhysicalTestResultsProps) {
                     const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
                     const userResponse = await axios.get(`${apiBase}/users/${userId}`);
                     console.log("API Response (fetchUserData):", userResponse.data);
-                    
-                    setUserName(userResponse.data.name);
-                    setResults(userResponse.data.results);
-                    setNationalDataGrade(userResponse.data.grade);
+
+                    if (userResponse.data.name) {
+                        setUserName(userResponse.data.name);
+                    }
+                    if (userResponse.data.grade) {
+                        setNationalDataGrade(userResponse.data.grade);
+                    }
                 } catch (error: unknown) {
                     console.error("Error fetching user data:", error);
                 }
@@ -185,7 +185,7 @@ function PhysicalTestResults({ userId }: PhysicalTestResultsProps) {
                         axios.get(`${apiBase}/average_data/grade/${nationalDataGrade}`),
                         axios.get(`${apiBase}/max_data/grade/${nationalDataGrade}`)
                     ]);
-                    
+
                     const averageData = {
                         ...averageResponse.data,
                         long_jump: averageResponse.data.long_jump_cm,
@@ -203,10 +203,10 @@ function PhysicalTestResults({ userId }: PhysicalTestResultsProps) {
                         eight_shape_run: maxResponse.data.eight_shape_run_count,
                         ball_throw: maxResponse.data.ball_throw_cm
                     };
-                    
+
                     setAverageData(averageData);
                     setMaxData(maxData);
-                    
+
                     setAverageMaxData([
                         { ...averageData, type: '平均値', long_jump: averageData.long_jump, fifty_meter_run: averageData.fifty_meter_run, spider: averageData.spider, eight_shape_run: averageData.eight_shape_run, ball_throw: averageData.ball_throw },
                         { ...maxData, type: '最高値', long_jump: maxData.long_jump, fifty_meter_run: maxData.fifty_meter_run, spider: maxData.spider, eight_shape_run: maxData.eight_shape_run, ball_throw: maxData.ball_throw }
@@ -224,14 +224,14 @@ function PhysicalTestResults({ userId }: PhysicalTestResultsProps) {
         fetchAverageMaxData();
     }, [nationalDataGrade]);
 
-useEffect(() => {
+    useEffect(() => {
         if (results && results.length > 0) {
             const labels = results.map(result => moment(result.date).format('YYYY年MM月DD日'));
-            
+
             let data: number[] = [];
             let label = '';
             let color = '';
-            
+
             switch (selectedTab) {
                 case 'long_jump':
                     data = results.map(result => result.long_jump_cm);
@@ -282,12 +282,12 @@ useEffect(() => {
         if (results && averageData && maxData) {
             // 最新の結果を取得
             const latestResult = results[results.length - 1];
-            
+
             // デバッグ用のログ
             console.log('最新の個人記録:', latestResult);
             console.log('全国平均データ:', averageData);
             console.log('全国最大データ:', maxData);
-            
+
             // 各項目の偏差値を計算
             const calculateDeviation = (value: number, average: number, type: string) => {
                 // デバッグ用のログ
@@ -416,7 +416,7 @@ useEffect(() => {
 
     const getDiffBadge = (current: number, previous: number | undefined, betterIsHigher: boolean, unit: string) => {
         if (previous === undefined) return null;
-        
+
         const diff = current - previous;
         if (diff === 0) return <span className="badge bg-secondary ms-2 text-white" style={{ fontSize: '0.7em' }}>±0</span>;
 
@@ -424,11 +424,11 @@ useEffect(() => {
         const sign = diff > 0 ? '+' : '';
         const colorClass = isImproved ? 'bg-success' : 'bg-danger';
         const arrow = isImproved ? '↑' : '↓';
-        
+
         // Format the difference string nicely based on the unit
         let formattedDiff = `${sign}${diff.toFixed(2).replace(/\.00$/, '')}`;
         if (unit === '秒' || unit === 'm') {
-             formattedDiff = `${sign}${(diff).toFixed(2)}`;
+            formattedDiff = `${sign}${(diff).toFixed(2)}`;
         }
 
         return (
@@ -439,170 +439,170 @@ useEffect(() => {
     };
 
     return (
-    <Container>
-        <h1 className="mb-4">{userName}さんの体力テスト結果</h1>
+        <Container>
+            <h1 className="mb-4">{userName}さんの体力テスト結果</h1>
 
-        {/* トレンド（推移）グラフセクション */}
-        <div className="mb-5 bg-white p-4 rounded shadow-sm">
-            <h3 className="mb-3">能力ごとの成長推移</h3>
-            
-            <div className="d-flex flex-wrap gap-2 mb-4">
-                <button 
-                    className={`btn ${selectedTab === 'long_jump' ? 'btn-primary' : 'btn-outline-primary'}`}
-                    onClick={() => setSelectedTab('long_jump')}
-                >立ち幅跳び</button>
-                <button 
-                    className={`btn ${selectedTab === 'fifty_meter_run' ? 'btn-warning text-dark' : 'btn-outline-warning'}`}
-                    onClick={() => setSelectedTab('fifty_meter_run')}
-                >50m走</button>
-                <button 
-                    className={`btn ${selectedTab === 'spider' ? 'btn-info text-white' : 'btn-outline-info'}`}
-                    onClick={() => setSelectedTab('spider')}
-                >スパイダー</button>
-                <button 
-                    className={`btn ${selectedTab === 'eight_shape_run' ? 'btn-danger' : 'btn-outline-danger'}`}
-                    onClick={() => setSelectedTab('eight_shape_run')}
-                >8の字走</button>
-                <button 
-                    className={`btn ${selectedTab === 'ball_throw' ? 'btn-secondary' : 'btn-outline-secondary'}`}
-                    onClick={() => setSelectedTab('ball_throw')}
-                >ボール投げ</button>
+            {/* トレンド（推移）グラフセクション */}
+            <div className="mb-5 bg-white p-4 rounded shadow-sm">
+                <h3 className="mb-3">能力ごとの成長推移</h3>
+
+                <div className="d-flex flex-wrap gap-2 mb-4">
+                    <button
+                        className={`btn ${selectedTab === 'long_jump' ? 'btn-primary' : 'btn-outline-primary'}`}
+                        onClick={() => setSelectedTab('long_jump')}
+                    >立ち幅跳び</button>
+                    <button
+                        className={`btn ${selectedTab === 'fifty_meter_run' ? 'btn-warning text-dark' : 'btn-outline-warning'}`}
+                        onClick={() => setSelectedTab('fifty_meter_run')}
+                    >50m走</button>
+                    <button
+                        className={`btn ${selectedTab === 'spider' ? 'btn-info text-white' : 'btn-outline-info'}`}
+                        onClick={() => setSelectedTab('spider')}
+                    >スパイダー</button>
+                    <button
+                        className={`btn ${selectedTab === 'eight_shape_run' ? 'btn-danger' : 'btn-outline-danger'}`}
+                        onClick={() => setSelectedTab('eight_shape_run')}
+                    >8の字走</button>
+                    <button
+                        className={`btn ${selectedTab === 'ball_throw' ? 'btn-secondary' : 'btn-outline-secondary'}`}
+                        onClick={() => setSelectedTab('ball_throw')}
+                    >ボール投げ</button>
+                </div>
+
+                {chartData && results && results.length > 0 ? (
+                    <div style={{ height: '300px', width: '100%', maxWidth: '800px', margin: '0 auto' }}>
+                        <Line
+                            data={chartData as any}
+                            options={{
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: { display: false },
+                                    title: { display: false }
+                                },
+                            }}
+                        />
+                    </div>
+                ) : (
+                    <p>推移グラフを表示するためのデータがありません。</p>
+                )}
             </div>
 
-            {chartData && results && results.length > 0 ? (
-                <div style={{ height: '300px', width: '100%', maxWidth: '800px', margin: '0 auto' }}>
-                    <Line 
-                        data={chartData as any} 
-                        options={{
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: { display: false },
-                                title: { display: false }
-                            },
-                        }} 
-                    />
-                </div>
-            ) : (
-                <p>推移グラフを表示するためのデータがありません。</p>
-            )}
-        </div>
-
-        {/* 総合レーダーチャートセクション */}
-        <div className="mb-5 bg-white p-4 rounded shadow-sm text-center">
-            <h3>総合評価（最新記録の全国平均比較）</h3>
-            {radarChartData && (
-                <div style={{ height: '400px', width: '400px', margin: '0 auto' }}>
-                    <Radar data={radarChartData} options={radarChartOptions} />
-                </div>
-            )}
-        </div>
-
-        <h2>個人の結果</h2>
-        {results && results.length > 0 ? (
-            <Table striped bordered hover>
-                <thead>
-                    <tr>
-                        <th>日付</th>
-                        <th>立ち幅跳び</th>
-                        <th>50m走</th>
-                        <th>スパイダー</th>
-                        <th>8の字走</th>
-                        <th>ボール投げ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {[...results].reverse().map((result, reverseIndex) => {
-                        const originalIndex = results.length - 1 - reverseIndex;
-                        const prevResult = originalIndex > 0 ? results[originalIndex - 1] : undefined;
-                        
-                        return (
-                            <tr key={result.id}>
-                                <td>{moment(result.date).format('YYYY年MM月DD日')}</td>
-                                <td>
-                                    {result.long_jump_cm} cm
-                                    {getDiffBadge(result.long_jump_cm, prevResult?.long_jump_cm, true, 'cm')}
-                                </td>
-                                <td>
-                                    {result.fifty_meter_run_ms / 100} 秒
-                                    {getDiffBadge(result.fifty_meter_run_ms / 100, prevResult ? prevResult.fifty_meter_run_ms / 100 : undefined, false, '秒')}
-                                </td>
-                                <td>
-                                    {result.spider_ms / 100} 秒
-                                    {getDiffBadge(result.spider_ms / 100, prevResult ? prevResult.spider_ms / 100 : undefined, false, '秒')}
-                                </td>
-                                <td>
-                                    {result.eight_shape_run_count} 回
-                                    {getDiffBadge(result.eight_shape_run_count, prevResult?.eight_shape_run_count, true, '回')}
-                                </td>
-                                <td>
-                                    {result.ball_throw_cm / 100} m
-                                    {getDiffBadge(result.ball_throw_cm / 100, prevResult ? prevResult.ball_throw_cm / 100 : undefined, true, 'm')}
-                                </td>
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </Table>
-        ) : (
-            <p>結果がありません</p>
-        )}
-        <div className="d-flex align-items-center justify-content-between my-4">
-            <h2 className="mb-0">
-                2023年度全国大会平均/最大データ
-            </h2>
-            <div className="d-flex align-items-center">
-                <label className="me-2 text-muted text-nowrap">比較する学年:</label>
-                <select 
-                    className="form-select form-select-sm" 
-                    value={nationalDataGrade || ''} 
-                    onChange={(e) => setNationalDataGrade(e.target.value)}
-                    style={{ width: 'auto' }}
-                >
-                    <option value="1年女子">1年女子</option>
-                    <option value="2年女子">2年女子</option>
-                    <option value="3年女子">3年女子</option>
-                    <option value="4年女子">4年女子</option>
-                    <option value="5年女子">5年女子</option>
-                    <option value="6年女子">6年女子</option>
-                    <option value="1年男子">1年男子</option>
-                    <option value="2年男子">2年男子</option>
-                    <option value="3年男子">3年男子</option>
-                    <option value="4年男子">4年男子</option>
-                    <option value="5年男子">5年男子</option>
-                    <option value="6年男子">6年男子</option>
-                </select>
+            {/* 総合レーダーチャートセクション */}
+            <div className="mb-5 bg-white p-4 rounded shadow-sm text-center">
+                <h3>総合評価（最新記録の全国平均比較）</h3>
+                {radarChartData && (
+                    <div style={{ height: '400px', width: '400px', margin: '0 auto' }}>
+                        <Radar data={radarChartData} options={radarChartOptions} />
+                    </div>
+                )}
             </div>
-        </div>
-        {averageMaxData && averageMaxData.length > 0 ? (
-            <Table striped bordered hover>
-                <thead>
-                    <tr>
-                        <th>タイプ</th>
-                        <th>立ち幅跳び</th>
-                        <th>50m走</th>
-                        <th>スパイダー</th>
-                        <th>8の字走</th>
-                        <th>ボール投げ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {averageMaxData.map((data) => (
-                        <tr key={data.id}>
-                            <td>{data.type}</td>
-                            <td>{data.long_jump_cm} cm</td>
-                            <td>{data.fifty_meter_run_ms/100} 秒</td>
-                            <td>{data.spider_ms/100} 秒</td>
-                            <td>{data.eight_shape_run_count} 回</td>
-                            <td>{data.ball_throw_cm/100} m</td>
+
+            <h2>個人の結果</h2>
+            {results && results.length > 0 ? (
+                <Table striped bordered hover>
+                    <thead>
+                        <tr>
+                            <th>日付</th>
+                            <th>立ち幅跳び</th>
+                            <th>50m走</th>
+                            <th>スパイダー</th>
+                            <th>8の字走</th>
+                            <th>ボール投げ</th>
                         </tr>
-                    ))}
-                </tbody>
-            </Table>
-        ) : (
-            <p>平均/最大データがありません</p>
-        )}
-    </Container>
+                    </thead>
+                    <tbody>
+                        {[...results].reverse().map((result, reverseIndex) => {
+                            const originalIndex = results.length - 1 - reverseIndex;
+                            const prevResult = originalIndex > 0 ? results[originalIndex - 1] : undefined;
+
+                            return (
+                                <tr key={result.id}>
+                                    <td>{moment(result.date).format('YYYY年MM月DD日')}</td>
+                                    <td>
+                                        {result.long_jump_cm} cm
+                                        {getDiffBadge(result.long_jump_cm, prevResult?.long_jump_cm, true, 'cm')}
+                                    </td>
+                                    <td>
+                                        {result.fifty_meter_run_ms / 100} 秒
+                                        {getDiffBadge(result.fifty_meter_run_ms / 100, prevResult ? prevResult.fifty_meter_run_ms / 100 : undefined, false, '秒')}
+                                    </td>
+                                    <td>
+                                        {result.spider_ms / 100} 秒
+                                        {getDiffBadge(result.spider_ms / 100, prevResult ? prevResult.spider_ms / 100 : undefined, false, '秒')}
+                                    </td>
+                                    <td>
+                                        {result.eight_shape_run_count} 回
+                                        {getDiffBadge(result.eight_shape_run_count, prevResult?.eight_shape_run_count, true, '回')}
+                                    </td>
+                                    <td>
+                                        {result.ball_throw_cm / 100} m
+                                        {getDiffBadge(result.ball_throw_cm / 100, prevResult ? prevResult.ball_throw_cm / 100 : undefined, true, 'm')}
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </Table>
+            ) : (
+                <p>結果がありません</p>
+            )}
+            <div className="d-flex align-items-center justify-content-between my-4">
+                <h2 className="mb-0">
+                    2023年度全国大会平均/最大データ
+                </h2>
+                <div className="d-flex align-items-center">
+                    <label className="me-2 text-muted text-nowrap">比較する学年:</label>
+                    <select
+                        className="form-select form-select-sm"
+                        value={nationalDataGrade || ''}
+                        onChange={(e) => setNationalDataGrade(e.target.value)}
+                        style={{ width: 'auto' }}
+                    >
+                        <option value="1年女子">1年女子</option>
+                        <option value="2年女子">2年女子</option>
+                        <option value="3年女子">3年女子</option>
+                        <option value="4年女子">4年女子</option>
+                        <option value="5年女子">5年女子</option>
+                        <option value="6年女子">6年女子</option>
+                        <option value="1年男子">1年男子</option>
+                        <option value="2年男子">2年男子</option>
+                        <option value="3年男子">3年男子</option>
+                        <option value="4年男子">4年男子</option>
+                        <option value="5年男子">5年男子</option>
+                        <option value="6年男子">6年男子</option>
+                    </select>
+                </div>
+            </div>
+            {averageMaxData && averageMaxData.length > 0 ? (
+                <Table striped bordered hover>
+                    <thead>
+                        <tr>
+                            <th>タイプ</th>
+                            <th>立ち幅跳び</th>
+                            <th>50m走</th>
+                            <th>スパイダー</th>
+                            <th>8の字走</th>
+                            <th>ボール投げ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {averageMaxData.map((data) => (
+                            <tr key={data.id}>
+                                <td>{data.type}</td>
+                                <td>{data.long_jump_cm} cm</td>
+                                <td>{data.fifty_meter_run_ms / 100} 秒</td>
+                                <td>{data.spider_ms / 100} 秒</td>
+                                <td>{data.eight_shape_run_count} 回</td>
+                                <td>{data.ball_throw_cm / 100} m</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+            ) : (
+                <p>平均/最大データがありません</p>
+            )}
+        </Container>
     );
 }
 
