@@ -562,9 +562,15 @@ useEffect(() => {
                     <option value="1年女子">1年女子</option>
                     <option value="2年女子">2年女子</option>
                     <option value="3年女子">3年女子</option>
+                    <option value="4年女子">4年女子</option>
+                    <option value="5年女子">5年女子</option>
+                    <option value="6年女子">6年女子</option>
                     <option value="1年男子">1年男子</option>
                     <option value="2年男子">2年男子</option>
                     <option value="3年男子">3年男子</option>
+                    <option value="4年男子">4年男子</option>
+                    <option value="5年男子">5年男子</option>
+                    <option value="6年男子">6年男子</option>
                 </select>
             </div>
         </div>
