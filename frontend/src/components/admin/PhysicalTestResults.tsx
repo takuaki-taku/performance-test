@@ -147,6 +147,9 @@ function PhysicalTestResults({ userId }: PhysicalTestResultsProps) {
                     // 全国大会（test_format === 2）または未設定（null）のデータのみを抽出
                     const nationalResults = convertedResults.filter((r: Result) => r.test_format === 2 || r.test_format == null);
 
+                    // 日付順（古い順）にソートする（グラフや差分の計算が狂わないようにするため）
+                    nationalResults.sort((a: Result, b: Result) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
                     setResults(nationalResults);
                 } catch (error: unknown) {
                     console.error(error);
