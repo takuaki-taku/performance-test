@@ -23,7 +23,7 @@ import {
     Filler
 } from 'chart.js';
 // @ts-ignore
-import { Radar } from 'react-chartjs-2';
+import { Radar, Line } from 'react-chartjs-2';
 
 ChartJS.register(
     CategoryScale,
@@ -112,7 +112,11 @@ function PhysicalTestResults({ userId }: PhysicalTestResultsProps) {
     const [averageData, setAverageData] = useState<DisplayData | null>(null);
     const [maxData, setMaxData] = useState<DisplayData | null>(null);
     const [chartData, setChartData] = useState<ChartData | null>(null);
+
     const [radarChartData, setRadarChartData] = useState<RadarChartData | null>(null);
+    const [selectedTab, setSelectedTab] = useState<string>('long_jump');
+
+
 
 
     useEffect(() => {
@@ -215,65 +219,59 @@ function PhysicalTestResults({ userId }: PhysicalTestResultsProps) {
         fetchUserData();
     }, [userId]);
 
-    useEffect(() => {
-        console.log("Results:", results);
-        console.log("Average Data:", averageData);
-        console.log("Max Data:", maxData);
-
-        if (results && averageData && maxData) {
+useEffect(() => {
+        if (results && results.length > 0) {
             const labels = results.map(result => moment(result.date).format('YYYY年MM月DD日'));
-            const longJumpData = results.map(result => result.long_jump_cm);
-            const fiftyMeterRunData = results.map(result => result.fifty_meter_run_ms);
-            const spiderData = results.map(result => result.spider_ms);
-            const eightShapeRunData = results.map(result => result.eight_shape_run_count);
-            const ballThrowData = results.map(result => result.ball_throw_cm);
+            
+            let data: number[] = [];
+            let label = '';
+            let color = '';
+            
+            switch (selectedTab) {
+                case 'long_jump':
+                    data = results.map(result => result.long_jump_cm);
+                    label = '立ち幅跳び (cm)';
+                    color = 'rgba(75, 192, 192, 1)';
+                    break;
+                case 'fifty_meter_run':
+                    data = results.map(result => result.fifty_meter_run_ms / 100);
+                    label = '50m走 (秒)';
+                    color = 'rgba(255, 206, 86, 1)';
+                    break;
+                case 'spider':
+                    data = results.map(result => result.spider_ms / 100);
+                    label = 'スパイダー (秒)';
+                    color = 'rgba(54, 162, 235, 1)';
+                    break;
+                case 'eight_shape_run':
+                    data = results.map(result => result.eight_shape_run_count);
+                    label = '8の字走 (回)';
+                    color = 'rgba(255, 99, 132, 1)';
+                    break;
+                case 'ball_throw':
+                    data = results.map(result => result.ball_throw_cm / 100);
+                    label = 'ボール投げ (m)';
+                    color = 'rgba(153, 102, 255, 1)';
+                    break;
+            }
 
-            // const diffFromAverageLongJump = longJumpData.map(value => value - (averageData?.long_jump || 0));
-            // const diffFromAverageFiftyMeterRun = fiftyMeterRunData.map(value => value - (averageData?.fifty_meter_run || 0));
-            // const diffFromAverageSpider = spiderData.map(value => value - (averageData?.spider || 0));
-            // const diffFromAverageEightShapeRun = eightShapeRunData.map(value => value - (averageData?.eight_shape_run || 0));
-            // const diffFromAverageBallThrow = ballThrowData.map(value => value - (averageData?.ball_throw || 0));
-
-            // const diffFromMaxLongJump = longJumpData.map(value => value - (maxData?.long_jump || 0));
-            // const diffFromMaxFiftyMeterRun = fiftyMeterRunData.map(value => value - (maxData?.fifty_meter_run || 0));
-            // const diffFromMaxSpider = spiderData.map(value => value - (maxData?.spider || 0));
-            // const diffFromMaxEightShapeRun = eightShapeRunData.map(value => value - (maxData?.eight_shape_run || 0));
-            // const diffFromMaxBallThrow = ballThrowData.map(value => value - (maxData?.ball_throw || 0));
-
-            const newChartData: ChartData = {
+            const newLineChartData: any = {
                 labels: labels,
                 datasets: [
                     {
-                        label: '立ち幅跳び (個人結果)',
-                        data: longJumpData,
-                        backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                    },
-                    {
-                        label: '50m走 (個人結果)',
-                        data: fiftyMeterRunData,
-                        backgroundColor: 'rgba(255, 206, 86, 0.5)',
-                    },
-                    {
-                        label: 'スパイダー (個人結果)',
-                        data: spiderData,
-                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                    },
-                    {
-                        label: '8の字走 (個人結果)',
-                        data: eightShapeRunData,
-                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                    },
-                    {
-                        label: 'ボール投げ (個人結果)',
-                        data: ballThrowData,
-                        backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                    },
-                ],
+                        label: label,
+                        data: data,
+                        borderColor: color,
+                        backgroundColor: color.replace('1)', '0.2)'),
+                        tension: 0.1,
+                        fill: false,
+                        pointBackgroundColor: color,
+                    }
+                ]
             };
-            console.log("Chart Data:", newChartData);
-            setChartData(newChartData);
+            setChartData(newLineChartData);
         }
-    }, [results, averageData, maxData]);
+    }, [results, selectedTab]);
 
     useEffect(() => {
         if (results && averageData && maxData) {
@@ -410,15 +408,90 @@ function PhysicalTestResults({ userId }: PhysicalTestResultsProps) {
         }
     };
 
+
+    const getDiffBadge = (current: number, previous: number | undefined, betterIsHigher: boolean, unit: string) => {
+        if (previous === undefined) return null;
+        
+        const diff = current - previous;
+        if (diff === 0) return <span className="badge bg-secondary ms-2 text-white" style={{ fontSize: '0.7em' }}>±0</span>;
+
+        const isImproved = betterIsHigher ? diff > 0 : diff < 0;
+        const sign = diff > 0 ? '+' : '';
+        const colorClass = isImproved ? 'bg-success' : 'bg-danger';
+        const arrow = isImproved ? '↑' : '↓';
+        
+        // Format the difference string nicely based on the unit
+        let formattedDiff = `${sign}${diff.toFixed(2).replace(/\.00$/, '')}`;
+        if (unit === '秒' || unit === 'm') {
+             formattedDiff = `${sign}${(diff).toFixed(2)}`;
+        }
+
+        return (
+            <span className={`badge ${colorClass} ms-2 text-white`} style={{ fontSize: '0.7em' }}>
+                {formattedDiff}{unit} {arrow}
+            </span>
+        );
+    };
+
     return (
     <Container>
-        <h1>{userName}さんの体力テスト結果</h1>
+        <h1 className="mb-4">{userName}さんの体力テスト結果</h1>
 
-        {radarChartData && (
-            <div style={{ height: '400px', width: '400px', margin: '0 auto' }}>
-                <Radar data={radarChartData} options={radarChartOptions} />
+        {/* トレンド（推移）グラフセクション */}
+        <div className="mb-5 bg-white p-4 rounded shadow-sm">
+            <h3 className="mb-3">能力ごとの成長推移</h3>
+            
+            <div className="d-flex flex-wrap gap-2 mb-4">
+                <button 
+                    className={`btn ${selectedTab === 'long_jump' ? 'btn-primary' : 'btn-outline-primary'}`}
+                    onClick={() => setSelectedTab('long_jump')}
+                >立ち幅跳び</button>
+                <button 
+                    className={`btn ${selectedTab === 'fifty_meter_run' ? 'btn-warning text-dark' : 'btn-outline-warning'}`}
+                    onClick={() => setSelectedTab('fifty_meter_run')}
+                >50m走</button>
+                <button 
+                    className={`btn ${selectedTab === 'spider' ? 'btn-info text-white' : 'btn-outline-info'}`}
+                    onClick={() => setSelectedTab('spider')}
+                >スパイダー</button>
+                <button 
+                    className={`btn ${selectedTab === 'eight_shape_run' ? 'btn-danger' : 'btn-outline-danger'}`}
+                    onClick={() => setSelectedTab('eight_shape_run')}
+                >8の字走</button>
+                <button 
+                    className={`btn ${selectedTab === 'ball_throw' ? 'btn-secondary' : 'btn-outline-secondary'}`}
+                    onClick={() => setSelectedTab('ball_throw')}
+                >ボール投げ</button>
             </div>
-        )}
+
+            {chartData && results && results.length > 0 ? (
+                <div style={{ height: '300px', width: '100%', maxWidth: '800px', margin: '0 auto' }}>
+                    <Line 
+                        data={chartData as any} 
+                        options={{
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                title: { display: false }
+                            },
+                        }} 
+                    />
+                </div>
+            ) : (
+                <p>推移グラフを表示するためのデータがありません。</p>
+            )}
+        </div>
+
+        {/* 総合レーダーチャートセクション */}
+        <div className="mb-5 bg-white p-4 rounded shadow-sm text-center">
+            <h3>総合評価（最新記録の全国平均比較）</h3>
+            {radarChartData && (
+                <div style={{ height: '400px', width: '400px', margin: '0 auto' }}>
+                    <Radar data={radarChartData} options={radarChartOptions} />
+                </div>
+            )}
+        </div>
 
         <h2>個人の結果</h2>
         {results && results.length > 0 ? (
@@ -434,16 +507,35 @@ function PhysicalTestResults({ userId }: PhysicalTestResultsProps) {
                     </tr>
                 </thead>
                 <tbody>
-                    {results.map((result) => (
-                        <tr key={result.id}>
-                            <td>{moment(result.date).format('YYYY年MM月DD日')}</td>
-                            <td>{result.long_jump_cm} cm</td>
-                            <td>{result.fifty_meter_run_ms/100} 秒</td>
-                            <td>{result.spider_ms/100} 秒</td>
-                            <td>{result.eight_shape_run_count} 回</td>
-                            <td>{result.ball_throw_cm/100} m</td>
-                        </tr>
-                    ))}
+                    {results.map((result, index) => {
+                        const prevResult = index > 0 ? results[index - 1] : undefined;
+                        
+                        return (
+                            <tr key={result.id}>
+                                <td>{moment(result.date).format('YYYY年MM月DD日')}</td>
+                                <td>
+                                    {result.long_jump_cm} cm
+                                    {getDiffBadge(result.long_jump_cm, prevResult?.long_jump_cm, true, 'cm')}
+                                </td>
+                                <td>
+                                    {result.fifty_meter_run_ms / 100} 秒
+                                    {getDiffBadge(result.fifty_meter_run_ms / 100, prevResult ? prevResult.fifty_meter_run_ms / 100 : undefined, false, '秒')}
+                                </td>
+                                <td>
+                                    {result.spider_ms / 100} 秒
+                                    {getDiffBadge(result.spider_ms / 100, prevResult ? prevResult.spider_ms / 100 : undefined, false, '秒')}
+                                </td>
+                                <td>
+                                    {result.eight_shape_run_count} 回
+                                    {getDiffBadge(result.eight_shape_run_count, prevResult?.eight_shape_run_count, true, '回')}
+                                </td>
+                                <td>
+                                    {result.ball_throw_cm / 100} m
+                                    {getDiffBadge(result.ball_throw_cm / 100, prevResult ? prevResult.ball_throw_cm / 100 : undefined, true, 'm')}
+                                </td>
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </Table>
         ) : (
