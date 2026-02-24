@@ -168,56 +168,61 @@ function PhysicalTestResults({ userId }: PhysicalTestResultsProps) {
                     setUserName(userResponse.data.name);
                     setResults(userResponse.data.results);
                     setNationalDataGrade(userResponse.data.grade);
-
-                    // 全国平均データと最大値データの取得
-                    if (userResponse.data.grade) {
-                        try {
-                            const [averageResponse, maxResponse] = await Promise.all([
-                                axios.get(`${apiBase}/average_data/grade/${userResponse.data.grade}`),
-                                axios.get(`${apiBase}/max_data/grade/${userResponse.data.grade}`)
-                            ]);
-                            
-                            console.log("Average Data Response:", averageResponse.data);
-                            console.log("Max Data Response:", maxResponse.data);
-                            
-                            const averageData = {
-                                ...averageResponse.data,
-                                long_jump: averageResponse.data.long_jump_cm,
-                                fifty_meter_run: averageResponse.data.fifty_meter_run_ms,
-                                spider: averageResponse.data.spider_ms,
-                                eight_shape_run: averageResponse.data.eight_shape_run_count,
-                                ball_throw: averageResponse.data.ball_throw_cm
-                            };
-
-                            const maxData = {
-                                ...maxResponse.data,
-                                long_jump: maxResponse.data.long_jump_cm,
-                                fifty_meter_run: maxResponse.data.fifty_meter_run_ms,
-                                spider: maxResponse.data.spider_ms,
-                                eight_shape_run: maxResponse.data.eight_shape_run_count,
-                                ball_throw: maxResponse.data.ball_throw_cm
-                            };
-                            
-                            setAverageData(averageData);
-                            setMaxData(maxData);
-                            
-                            // テーブル表示用のデータを設定
-                            setAverageMaxData([
-                                { ...averageData, type: '平均値', long_jump: averageData.long_jump, fifty_meter_run: averageData.fifty_meter_run, spider: averageData.spider, eight_shape_run: averageData.eight_shape_run, ball_throw: averageData.ball_throw },
-                                { ...maxData, type: '最高値', long_jump: maxData.long_jump, fifty_meter_run: maxData.fifty_meter_run, spider: maxData.spider, eight_shape_run: maxData.eight_shape_run, ball_throw: maxData.ball_throw }
-                            ]);
-                } catch (error: unknown) {
-                            console.error("Error fetching average/max data:", error);
-                        }
-                    }
                 } catch (error: unknown) {
                     console.error("Error fetching user data:", error);
                 }
             }
         };
-
         fetchUserData();
     }, [userId]);
+
+    useEffect(() => {
+        const fetchAverageMaxData = async () => {
+            if (nationalDataGrade) {
+                try {
+                    const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+                    const [averageResponse, maxResponse] = await Promise.all([
+                        axios.get(`${apiBase}/average_data/grade/${nationalDataGrade}`),
+                        axios.get(`${apiBase}/max_data/grade/${nationalDataGrade}`)
+                    ]);
+                    
+                    const averageData = {
+                        ...averageResponse.data,
+                        long_jump: averageResponse.data.long_jump_cm,
+                        fifty_meter_run: averageResponse.data.fifty_meter_run_ms,
+                        spider: averageResponse.data.spider_ms,
+                        eight_shape_run: averageResponse.data.eight_shape_run_count,
+                        ball_throw: averageResponse.data.ball_throw_cm
+                    };
+
+                    const maxData = {
+                        ...maxResponse.data,
+                        long_jump: maxResponse.data.long_jump_cm,
+                        fifty_meter_run: maxResponse.data.fifty_meter_run_ms,
+                        spider: maxResponse.data.spider_ms,
+                        eight_shape_run: maxResponse.data.eight_shape_run_count,
+                        ball_throw: maxResponse.data.ball_throw_cm
+                    };
+                    
+                    setAverageData(averageData);
+                    setMaxData(maxData);
+                    
+                    setAverageMaxData([
+                        { ...averageData, type: '平均値', long_jump: averageData.long_jump, fifty_meter_run: averageData.fifty_meter_run, spider: averageData.spider, eight_shape_run: averageData.eight_shape_run, ball_throw: averageData.ball_throw },
+                        { ...maxData, type: '最高値', long_jump: maxData.long_jump, fifty_meter_run: maxData.fifty_meter_run, spider: maxData.spider, eight_shape_run: maxData.eight_shape_run, ball_throw: maxData.ball_throw }
+                    ]);
+                } catch (error: unknown) {
+                    console.error("Error fetching average/max data:", error);
+                    // clear out if API fails
+                    setAverageData(null);
+                    setMaxData(null);
+                    setAverageMaxData(null);
+                }
+            }
+        };
+
+        fetchAverageMaxData();
+    }, [nationalDataGrade]);
 
 useEffect(() => {
         if (results && results.length > 0) {
@@ -507,8 +512,9 @@ useEffect(() => {
                     </tr>
                 </thead>
                 <tbody>
-                    {results.map((result, index) => {
-                        const prevResult = index > 0 ? results[index - 1] : undefined;
+                    {[...results].reverse().map((result, reverseIndex) => {
+                        const originalIndex = results.length - 1 - reverseIndex;
+                        const prevResult = originalIndex > 0 ? results[originalIndex - 1] : undefined;
                         
                         return (
                             <tr key={result.id}>
@@ -541,9 +547,27 @@ useEffect(() => {
         ) : (
             <p>結果がありません</p>
         )}
-        <h2>
-            {nationalDataGrade ? `${nationalDataGrade}の2023年度全国大会平均/最大データ` : '2023年度全国大会平均/最大データ'}
-        </h2>
+        <div className="d-flex align-items-center justify-content-between my-4">
+            <h2 className="mb-0">
+                2023年度全国大会平均/最大データ
+            </h2>
+            <div className="d-flex align-items-center">
+                <label className="me-2 text-muted text-nowrap">比較する学年:</label>
+                <select 
+                    className="form-select form-select-sm" 
+                    value={nationalDataGrade || ''} 
+                    onChange={(e) => setNationalDataGrade(e.target.value)}
+                    style={{ width: 'auto' }}
+                >
+                    <option value="1年女子">1年女子</option>
+                    <option value="2年女子">2年女子</option>
+                    <option value="3年女子">3年女子</option>
+                    <option value="1年男子">1年男子</option>
+                    <option value="2年男子">2年男子</option>
+                    <option value="3年男子">3年男子</option>
+                </select>
+            </div>
+        </div>
         {averageMaxData && averageMaxData.length > 0 ? (
             <Table striped bordered hover>
                 <thead>
