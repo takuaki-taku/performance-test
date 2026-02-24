@@ -549,7 +549,7 @@ function PhysicalTestResults({ userId }: PhysicalTestResultsProps) {
             )}
             <div className="d-flex align-items-center justify-content-between my-4">
                 <h2 className="mb-0">
-                    2023年度全国大会平均/最大データ
+                    {nationalDataGrade ? `${nationalDataGrade}の2023年度全国大会平均/最大データ` : '2023年度全国大会平均/最大データ'}
                 </h2>
                 <div className="d-flex align-items-center">
                     <label className="me-2 text-muted text-nowrap">比較する学年:</label>
