@@ -446,6 +446,20 @@ function PhysicalTestResults({ userId }: PhysicalTestResultsProps) {
         );
     };
 
+    if (results === null) {
+        return (
+            <Container className="d-flex justify-content-center align-items-center flex-column" style={{ minHeight: '50vh' }}>
+                <div className="spinner-border text-primary" role="status" style={{ width: '3rem', height: '3rem' }}>
+                    <span className="visually-hidden">読み込み中...</span>
+                </div>
+                <p className="mt-4 text-muted text-center">
+                    データを取得しています...<br />
+                    <small>※初回のアクセス時はサーバーの起動準備のため、最大で50秒ほどかかる場合があります。</small>
+                </p>
+            </Container>
+        );
+    }
+
     return (
         <Container>
             <h1 className="mb-4">{userName}さんの体力テスト結果</h1>
